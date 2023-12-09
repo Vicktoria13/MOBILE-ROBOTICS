@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="map_name" default="buvette"/>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+	<include file="$(find minilab_simulation)/launch/empty_world.launch">
+		<arg name="world_name" value="worlds/empty.world"/> <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable  empty.world --> 
+		<arg name="paused" value="false"/>
+		<arg name="use_sim_time" value="true"/>
+		<arg name="gui" value="true"/>
+		<arg name="headless" value="false"/>
+		<arg name="debug" value="false"/>
+	</include>
+
+	
+  	<node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf  -x 0.0 -y 0 -z 0.05 -Y 1.57 -model minilab_equiped" />
+	<!--node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model pr2" /-->
+
+	<include file="$(find minilab_simulation)/launch/$(arg map_name).launch" />	
+
+</launch>
+
+

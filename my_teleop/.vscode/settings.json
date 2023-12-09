@@ -1,0 +1,26 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/spi-2019/mainblades_ws/install/ouster_ros/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/mcl_3dl/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/pcl_ros/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/dji_com_proto/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/roslaunch_stager/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_constants/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_actions/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_services/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/spi-2019/mainblades_ws/install/ouster_ros/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/mcl_3dl/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/pcl_ros/lib/python3/dist-packages",
+        "/home/spi-2019/mainblades_ws/install/dji_com_proto/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/roslaunch_stager/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_constants/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_actions/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_services/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

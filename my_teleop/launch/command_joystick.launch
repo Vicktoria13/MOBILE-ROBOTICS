@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<launch>
+   <node pkg="my_teleop" type="command.py" name="our_node" output="screen"/>
+   <param name="joy_node/dev" value= "/dev/input/js0"/>
+   <node pkg="joy" type="joy_node" name="joy_node" output="screen"/>
+</launch>

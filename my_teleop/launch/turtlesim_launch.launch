@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+
+<launch>
+   <!-- Three nodes -->
+   <node pkg="launch_pkg" type="sensor_node" name="sensor_node" output="screen"/>
+   <node pkg="launch_pkg" type="compute_node" name="compute_node" output="screen"/>
+   <node pkg="launch_pkg" type="motor_node" name="motor_node" output="screen"/>
+</launch>

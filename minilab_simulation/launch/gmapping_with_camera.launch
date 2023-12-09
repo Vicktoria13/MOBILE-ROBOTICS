@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<launch>
+   
+    <node pkg="image_rotate" type="image_rotate" name="depth_image_rotate">
+		<remap from="image" to="camera/depth/image_raw"/>
+		<remap from="rotated/image" to="camera/depth/image_rotated"/>
+		
+		<param name="target_x" value="0.0"/>
+		<param name="target_y" value="0.0"/>
+		<param name="target_z" value="1.0"/>
+		
+		<param name="source_x" value="0.0"/>
+		<param name="source_y" value="1.0"/>
+		<param name="source_z" value="0.0"/>
+		
+		<param name="target_frame_id" value="camera_depth_frame"/>
+		<param name="output_frame_id" value="rotated_camera_depth_frame"/>
+	</node>
+    
+    <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" args="image:=/camera/depth/image_rotated" respawn="true"> 
+    	<remap from="scan" to="/scan_camera"/>
+        <param name="output_frame_id" value="scan_camera_depth_frame"/>
+        <param name="scan_height" value="250"/> 
+        <param name="scan_time" value="0.125"/>
+        <param name="range_min" value="0.40"/>
+        <param name="range_max" value="inf"/>
+    </node>
+    
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=/scan_camera">
+		<param name="delta" type="double" value="0.025" />
+		<param name="temporalUpdate" type="double" value="2.5" />
+		<param name="xmin" type="double" value="-5" />
+		<param name="xmax" type="double" value="5" />
+		<param name="ymin" type="double" value="-5" />
+		<param name="ymax" type="double" value="5" />
+	</node>
+	
+</launch>
