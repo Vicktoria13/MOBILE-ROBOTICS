@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<launch>
+   <node pkg="my_map_processing" type="my_map_processing_node" name="map_visu" output="screen"/>
+</launch>
+
+

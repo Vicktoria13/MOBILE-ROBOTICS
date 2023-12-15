@@ -9,7 +9,9 @@ Tableau de commande :
 | ```catkin_create_pkg my_teleop rospy roscpp sensor_msgs geometry_msgs``` |``` ~/robmob_ws/src``` | Creer un package avec les dependences|
 | ```catkin_init_workspace``` |``` ~/robmob_ws/src``` | Intit |
 | ```rospack find name_package``` |``` ``` | Pour localiser un package ROS|
-
+| ```rostopic hz /map``` | | Pour connaitre la fréquence de publication|
+| ``` killall gzserver ``` | | Pour fermer toute instance de gazebo|
+| ``` rosrun map_server map_saver --occ 90 --free 10 -f map_rob_mob map:=/map ``` | | Pour enregistrerla map.pgm dans le chemin de map:=""|
 
 ### Un package ROS 
 - dossier script = python
@@ -17,6 +19,22 @@ Tableau de commande :
 - dossier srv avec le src
 - dossier launch
 - .config 
+
+__Creer un package ROS C++__
+
+1- On lance la commande depuis ```ws/src```
+```catkin_create_pkg my_teleop roscpp sensor_msgs geometry_msgs```
+
+2- On va dans ```nom_package/src``` et on crée un fichier ```my_node.cpp```
+
+3- Modifier le ```CMakeLists.txt``` pour ajouter le fichier ```my_node.cpp``` tel que :
+
+- ``` find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs geometry_msgs)``` pour ajouter les dépendances. Ajouter la meme chose dans le ```package.xml```
+
+- ```add_executable(my_node src/my_node.cpp)``` pour ajouter le fichier ```my_node.cpp``` dans le package
+
+- ```target_link_libraries(my_node ${catkin_LIBRARIES})``` pour lier les librairies
+
 
 
 ### pour lancer le minilab, lancer la commande suivante :
@@ -29,7 +47,8 @@ Remarque : pour éviter de ralentir l'ordi, dans le fichier :
 ### pour lancer le mapping, lancer la commande suivante :
 ```rosrun gmapping slam_gmapping```
 
-
+### pour lancer la téléopération, lancer la commande suivante :
+```roslaunch my_teleop command_joystick.launch```
 
 - affichage Gazebo :
 ![Alt text](images/gazebo_start.png)
@@ -55,3 +74,16 @@ Ce code signifie que l'on lance le noeud :
 - de type ```command.py``` ( on met le nom du script python quand on lance un script python, le nom de l'executable quand on lance un executable)
 - avec le nom ```our_node``` (on peut mettre TOTO)
 - avec l'option ```output="screen"``` pour afficher les messages dans le terminal
+
+
+# Seance 2
+
+But : on rajoute un noeud qui permet de lire les messages du topic ```/map``` de type ```nav_msgs/OccupancyGrid```. On affcihe la map dans une fenetre type opencv.
+
+## Installation d'opencv
+
+-``` sudo apt install libopencv-dev```
+- Rajouter dans le ```CMakeLists.txt``` :
+```find_package(OpenCV)```
+```include_directories(${OpenCV_INCLUDE_DIRS})```
+```target_link_libraries(my_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})```
