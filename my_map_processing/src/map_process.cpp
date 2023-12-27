@@ -1,50 +1,123 @@
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "nav_msgs/OccupancyGrid.h"
-#include "opencv2/opencv.hpp"
-#include "iostream"
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/GetMap.h>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/highgui/highgui.hpp>
 
-// on s'inscrit sur le topic /map.
+#include "../include/my_map_processing/Divide.hpp"
+#include "../include/my_map_processing/Subcell.hpp"
 
-// le call back doit entendre des messages de type OccupancyGrid
-void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& msg)
-{
-  //cb de cases ?
-  //ROS_INFO("j'entends : [%d]", msg->data[0]);
 
-  ROS_INFO("taille map ligne = %d colonne = %d ", msg->info.height, msg->info.width); 
 
-  cv::Mat opencv_matrix = cv::Mat::zeros( msg->info.height, msg->info.width, CV_8U);
 
-  cv::Mat image = cv::imread("/home/spi-2019/Téléchargements/test.png");
 
-  int cpt = 0;
-  for (int i=0; i < 4000; i++){
-    for (int j=0; j < 4000; j++){
-        if (msg->data[i,j] == 0){
-            cpt++;
-        }
+class MyNode {
+public:
+    MyNode() {
+        // Initialize ROS node handle
+        nh_ = ros::NodeHandle("~");
+
+        map_sub_ = nh_.subscribe("/map", 1, &MyNode::mapCallback, this);
+
+        // Set the service client to call the dynamic map service
+        dynamic_map_client_ = nh_.serviceClient<nav_msgs::GetMap>("/dynamic_map");
+
+        // Set the update rate (e.g., every 5 seconds)
+        update_rate_ = 0.8; // Set the desired update rate in Hz
+        timer_ = nh_.createTimer(ros::Duration(1.0 / update_rate_), &MyNode::timerCallback, this);
     }
-  }
-  ROS_INFO("tot = %d", cpt);
 
-  // on veut ensuite afficher :
-  
-  cv::imshow("occupancy grid",image);
-  cv::waitKey(10);
-  
+    // Callback for the /map topic
+    void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg) {
+        
+        // ROS info la taille de la map
+        ROS_INFO("Map size: %d x %d", map_msg->info.width, map_msg->info.height);
+        
+    }
 
-}
-int main(int argc, char **argv)
-{
- 
-  ros::init(argc, argv, "j_ecoute_la_map");
-  ros::NodeHandle n;
-  ros::Subscriber sub = n.subscribe("/map", 50, mapCallback);
 
-  cv::namedWindow("occupancy grid",cv::WINDOW_NORMAL);
-  ros::spin();
-  cv::destroyWindow("occupancy grid");
 
-  return 0;
+    cv::Mat occupancy_to_cvmatrix(const nav_msgs::OccupancyGrid& map_msg) {
+    // Convert the map message to a cv::Mat
+
+        // Dimensions limites
+        int N = 5;
+        int W_MIN = ((N-1)/2)*map_msg.info.width/N;
+        int W_MAX = ((N+1)/2)*map_msg.info.width/N;
+        int H_MIN = ((N-1)/2)*map_msg.info.height/N;
+        int H_MAX = ((N+1)/2)*map_msg.info.height/N;
+
+        ROS_INFO("New map size: %d x %d", (W_MAX-W_MIN), (H_MAX-H_MIN));
+
+        //pixel dimensions souhaitées
+        cv::Mat map_image((H_MAX-H_MIN), (W_MAX-W_MIN), CV_8UC1);
+        //cv::Mat map_image((H_MAX-H_MIN), (W_MAX-W_MIN), CV_8UC3);
+        int seuil = 50;
+
+        for (int r = W_MIN; r < W_MAX; r++) {
+            for (int c = H_MIN; c < H_MAX; c++) {
+                int8_t map_value = map_msg.data[r * map_msg.info.width + c];
+
+                //map_value est une probabilité entre 0 et 100, -1 si inconnu
+                if (map_value == -1) {
+
+                    map_image.at<uchar>(r-W_MIN, c-H_MIN) = 110;
+
+                } else if (map_value > seuil) {
+
+                    map_image.at<uchar>(r-W_MIN, c-H_MIN) = 0;
+
+                } else {
+                    map_image.at<uchar>(r-W_MIN, c-H_MIN) = 255;
+                }
+
+            }
+        }
+
+
+    return map_image;
+    }
+
+
+
+
+
+    // Timer callback for periodic map updates
+    void timerCallback(const ros::TimerEvent& event) {
+        // Call the dynamic map service to get the updated map
+        ROS_INFO("Timer callback");
+        nav_msgs::GetMap dynamic_map_srv;
+        if (dynamic_map_client_.call(dynamic_map_srv)) {
+            ROS_INFO("Received updated map from dynamic_map service");
+
+            //on affiche charge une image png
+            cv::Mat map_image = occupancy_to_cvmatrix(dynamic_map_srv.response.map);
+            cv::imshow("Map", map_image);
+            cv::waitKey(30);
+
+            cv::imwrite("/home/spi-2019/test.png", map_image);
+
+        } else {
+            ROS_ERROR("Failed to call dynamic_map service");
+        }
+
+
+        
+    }
+
+private:
+    ros::NodeHandle nh_;
+    ros::Subscriber map_sub_;
+    ros::ServiceClient dynamic_map_client_;
+    ros::Timer timer_;
+    double update_rate_;
+};
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "my_node");
+    MyNode my_node;
+    ros::spin();
+
+    return 0;
 }

@@ -1,17 +1,25 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(my_map_processing)
 
-#on ajoute aussi l'occupancy grid
+#on ajoute aussi l'occupancy grid et cv_bridge et grid map
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   geometry_msgs
   nav_msgs
+  cv_bridge
+  grid_map_ros
+  grid_map_cv
+  grid_map_msgs
+
+
 
 )
 
 find_package(OpenCV)
+
+find_package(grid_map_ros REQUIRED)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -24,6 +32,8 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+
+
 )
 
 ## Declare a C++ library

@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<launch>
+   <!-- Lancer l'équivalent de roslaunch minilab_simulation minilab_simulation.launch-->
+   <include file="$(find minilab_simulation)/launch/minilab_simulation.launch" >
+      <arg name="map" value="buvette" />
+   </include>
+
+   <!-- Lancer l'équivalent de rosrun gmapping slam_gmapping-->
+   <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen"/>
+
+   <!-- Lancer Rviz-->
+   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find minilab_simulation)/rviz/minilab.rviz"/>
+
+   <!-- Lancer roslaunch my_teleop command_joystick.launch que si arg teleop a true-->
+   <!-- <arg name="teleop" default="false"/>
+   <include file="$(find my_teleop)/launch/command_joystick.launch" if="$(arg teleop)"/> -->
+
+    <!-- Lancer l'équivalent de roslaunch my_map_processing map_processing.launch-->
+   <!-- <node pkg="my_map_processing" type="my_map_processing_node" name="map_visu" output="screen"/>-->
+
+</launch>
+
+

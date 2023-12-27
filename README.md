@@ -87,3 +87,20 @@ But : on rajoute un noeud qui permet de lire les messages du topic ```/map``` de
 ```find_package(OpenCV)```
 ```include_directories(${OpenCV_INCLUDE_DIRS})```
 ```target_link_libraries(my_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})```
+
+
+<!-- ### Pour interface GRID MAP avec OPENCV
+```sudo apt-get install ros-noetic-grid-map```
+ -->
+
+
+ Voir ```map_process.cpp```
+
+# Seance 3
+
+But en 2 étape :
+
+- En partant d'un point de départ, explorer entièrement la carte par téléopération
+- Une fois la carte entièrement explorée, le robot doit revenir au point de départ de manière autonome via algo de plannif
+
+```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
