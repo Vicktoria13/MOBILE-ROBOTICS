@@ -133,6 +133,18 @@ But en 2 étape :
 
 
 
+# Annexe : COMMENT LANCER rviz depuis un launch avec une config particulière
+
+Le but est de pouvoir lancer rviz via le launch file, une fois tous les autres noeuds lancés. On voudrait que l'affichage rviz s'ouvre en affichant les topics qui nous interessent, __sans que l'on ait à cliquer et tout ouvrir par nous-même__
+
+- Pour cela, ouvrir une fois rviz, avec les topics ouverts qui nous interessent (```/map```, ```/robot_model```,```/tf```)
+
+- Faire ```save configuration``` (option proposée si on tente de fermer la fenêtre)
+
+- Enregistrer le .rviz dans un fichier ```config/rviz```
+
+- Dans le launch, ecrire :  ```  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NOM_PAQUET)/config/rviz/pionner_visu.rviz"/>```
+
 # A EVITER
 
 - Avoir dans 2 packages différents, 2 executables de même nom !!

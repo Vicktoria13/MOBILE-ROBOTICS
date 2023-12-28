@@ -4,19 +4,18 @@
    <include file="$(find minilab_simulation)/launch/minilab_simulation.launch" >
       <arg name="map" value="buvette" />
    </include>
-
    <!-- Lancer l'équivalent de rosrun gmapping slam_gmapping-->
    <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen"/>
 
-   <!-- Lancer Rviz-->
-   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find minilab_simulation)/rviz/minilab.rviz"/>
+   <!-- Lancer Rviz avec un config file-->
+   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find path_planning_map)/config/rviz/pionner_visu.rviz"/>
 
    <!-- Lancer roslaunch my_teleop command_joystick.launch que si arg teleop a true-->
    <!-- <arg name="teleop" default="false"/>
    <include file="$(find my_teleop)/launch/command_joystick.launch" if="$(arg teleop)"/> -->
 
-   <!-- Lancer l'équivalent de roslaunch my_map_processing map_processing.launch-->
-
+   <!-- Lancer l'équivalent de rosrun path_planning_map map_process_node -->
+   <node pkg="path_planning_map" type="map_process_node" name="map_processing" output="screen"/>
 
    <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/>
 
