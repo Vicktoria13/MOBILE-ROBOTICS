@@ -2,8 +2,9 @@
 #define DIVIDE_H_PP
 
 #include <opencv2/highgui/highgui.hpp>
-#include "Subcell.hpp"
+#include "path_planning_map/Subcell.hpp"
 #include <vector>
+#include <ros/ros.h>
 
 
 /**
@@ -13,13 +14,13 @@
 class Divide{
     protected :
 
-        // the map
+        // the map reçu par le noeud map_processing
         cv::Mat map_image_original;
         //dimensions
         int rows;
         int cols;
 
-        //pas
+        //pas de la grille pour permettre de diviser la map
         int pas;
 
         // un tableau de subcells via la bib C++
@@ -47,6 +48,9 @@ class Divide{
         std::vector<Subcell> get_subcells();
         cv::Mat get_map_image_original();
         int get_pas();
+
+        int get_rows();
+        int get_cols();
 
 };
 

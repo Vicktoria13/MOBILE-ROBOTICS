@@ -104,3 +104,35 @@ But en 2 étape :
 - Une fois la carte entièrement explorée, le robot doit revenir au point de départ de manière autonome via algo de plannif
 
 ```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
+
+
+![Alt text](images/divide.png)
+
+
+# Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
+
+
+
+- Lancer le Minilab simu
+```roslaunch minilab_simulation minilab_simulation.launch```
+
+- Lancer gmapping
+```rosrun gmapping slam_gmapping```
+
+- Lancer la téléop via JOYSTICK (regarder le port)
+```roslaunch my_teleop command_joystick.launch```
+
+
+
+- Lancer la visu via OpenCV
+```roslaunch my_map_processing map_processing.launch```
+
+
+- Lancer la téléop via Clavier (un peu lent)
+```roslaunch my_teleop keyboard.launch ```
+
+
+
+# A EVITER
+
+- Avoir dans 2 packages différents, 2 executables de même nom !!

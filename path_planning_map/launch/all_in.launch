@@ -15,8 +15,11 @@
    <!-- <arg name="teleop" default="false"/>
    <include file="$(find my_teleop)/launch/command_joystick.launch" if="$(arg teleop)"/> -->
 
-    <!-- Lancer l'équivalent de roslaunch my_map_processing map_processing.launch-->
-   <!-- <node pkg="my_map_processing" type="my_map_processing_node" name="map_visu" output="screen"/>-->
+   <!-- Lancer l'équivalent de roslaunch my_map_processing map_processing.launch-->
+
+
+   <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/>
+
 
 </launch>
 

@@ -5,10 +5,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 
-#include "../include/my_map_processing/Divide.hpp"
-#include "../include/my_map_processing/Subcell.hpp"
-
-
+#include "path_planning_map/Divide.hpp"
 
 
 

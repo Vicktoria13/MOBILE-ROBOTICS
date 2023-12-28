@@ -1,7 +1,7 @@
-#include "../include/my_map_processing/Divide.hpp"
-
+#include "path_planning_map/Divide.hpp"
 
 // on implemente les fonctions
+
 
 
 
@@ -38,14 +38,14 @@ void Divide::divide_map(){
     for (int r = 0; r < rows; r+=pas) {
         for (int c = 0; c < cols; c+=pas) {
 
-            // on recupere la sous matrice
-            cv::Mat sous_rectangle = map_image_original(cv::Rect(c, r, pas, pas));
-
-            // on regarde si il y a au moins un pixel noir
-            bool is_occupied = detect_subcells(sous_rectangle);
-
-            // on stocke la subcell dans le tableau
-            subcells.push_back(Subcell(is_occupied, pas, c, r));
+            // on verifie que la subcell ne depasse pas de la map
+            if (r + pas< rows && c + pas < cols){
+                cv::Mat sous_rectangle = map_image_original(cv::Rect(c, r, pas, pas));
+                bool is_occupied = detect_subcells(sous_rectangle);
+                subcells.push_back(Subcell(is_occupied, pas, c, r, 999));
+             
+            }
+            
         }
     }
 
@@ -88,8 +88,9 @@ bool Divide::detect_subcells(cv::Mat sous_rectangle){
 
 void Divide::display_subcells(){
 
-    // affiche sous forme d'image et enregistre
+    // affiche sous forme d'image et enregistre openCV fenetre AVEC GRILLE
 
+    ROS_INFO("display_subcells");
 }
 
 // getters
@@ -106,3 +107,10 @@ int Divide::get_pas(){
 
 
 
+int Divide::get_rows(){
+    return rows;
+}
+
+int Divide::get_cols(){
+    return cols;
+}
