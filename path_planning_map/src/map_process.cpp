@@ -47,9 +47,9 @@ public:
 
         ROS_INFO("New map size: %d x %d", (W_MAX-W_MIN), (H_MAX-H_MIN));
 
-        //pixel dimensions souhaitées
+        //pixel dimensions souhaitées EN RIS !
+        // 0 est la couleur noire, 255 la couleur blanche
         cv::Mat map_image((H_MAX-H_MIN), (W_MAX-W_MIN), CV_8UC1);
-        //cv::Mat map_image((H_MAX-H_MIN), (W_MAX-W_MIN), CV_8UC3);
         int seuil = 50;
 
         for (int r = W_MIN; r < W_MAX; r++) {
@@ -59,7 +59,7 @@ public:
                 //map_value est une probabilité entre 0 et 100, -1 si inconnu
                 if (map_value == -1) {
 
-                    map_image.at<uchar>(r-W_MIN, c-H_MIN) = 110;
+                    map_image.at<uchar>(r-W_MIN, c-H_MIN) = 0; //obstacle = inconnu
 
                 } else if (map_value > seuil) {
 
@@ -93,7 +93,13 @@ public:
             cv::imshow("Map", map_image);
             cv::waitKey(30);
 
-            cv::imwrite("/home/spi-2019/test.png", map_image);
+            //save in grayscale
+            cv::imwrite("/home/spi-2019/test1.png", map_image);
+
+            // TRAITEMENT DE LA MAP
+            Divide div = Divide(map_image, 10);
+            //print dimensions
+            ROS_INFO("rows: %d", div.get_rows());
 
         } else {
             ROS_ERROR("Failed to call dynamic_map service");

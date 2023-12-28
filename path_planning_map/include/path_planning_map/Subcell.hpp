@@ -25,6 +25,11 @@ public:
     ~Subcell();
 
     //getter
+    bool get_is_occupied();
+    int get_size();
+    int get_x();
+    int get_y();
+    int get_id();
 
 
 };

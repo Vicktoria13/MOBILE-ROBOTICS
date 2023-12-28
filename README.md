@@ -145,6 +145,15 @@ Le but est de pouvoir lancer rviz via le launch file, une fois tous les autres n
 
 - Dans le launch, ecrire :  ```  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NOM_PAQUET)/config/rviz/pionner_visu.rviz"/>```
 
+
+# Annexe : construire un CMAKE avec sa propre librairie
+
+- Il faut ajouter la macro ```${PROJECT_NAME} ``` Dans le target link pour inclure les bibliothèques spécifiques à votre projet dans la liste des bibliothèques à lier. 
+
+```target_link_libraries(map_process_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})```
+
+
 # A EVITER
 
 - Avoir dans 2 packages différents, 2 executables de même nom !!
+

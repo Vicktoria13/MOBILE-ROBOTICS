@@ -41,13 +41,17 @@ install(
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
+
+# CODES AJOUTES
+
+# - offline pour les test
+# - map_process_node pour l'affichage de la map via opencv
+
 add_executable(offline src/offline.cpp)
 target_link_libraries(offline ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
 add_executable(map_process_node src/map_process.cpp)
-target_link_libraries(map_process_node 
-                  ${catkin_LIBRARIES} 
-                  ${OpenCV_LIBS})
+target_link_libraries(map_process_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 

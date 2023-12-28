@@ -2,6 +2,7 @@
 #define DIVIDE_H_PP
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include "path_planning_map/Subcell.hpp"
 #include <vector>
 #include <ros/ros.h>
@@ -35,13 +36,16 @@ class Divide{
         virtual ~Divide(){};
 
         // une methode pour permettre de diviser la map en plusieurs parties
-        void divide_map();
+        int divide_map();
 
         bool detect_subcells(cv::Mat sous_rectangle);
 
         //display
 
         void display_subcells();
+
+        //for debug
+        void display_image_with_tab();
 
 
         // getters

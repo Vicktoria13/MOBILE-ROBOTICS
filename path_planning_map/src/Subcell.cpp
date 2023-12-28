@@ -32,3 +32,26 @@ Subcell::~Subcell(){
      */
 
 }
+
+
+//getter
+
+bool Subcell::get_is_occupied(){
+    return this->is_occupied;
+}
+
+int Subcell::get_size(){
+    return this->size;
+}
+
+int Subcell::get_x(){
+    return this->x;
+}
+
+int Subcell::get_y(){
+    return this->y;
+}
+
+int Subcell::get_id(){
+    return this->id;
+}

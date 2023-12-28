@@ -15,11 +15,27 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "simple_node");
     ros::NodeHandle nh;
 
-    // Charger une image OpenCV en binnaire
-    cv::Mat image = cv::imread("src/minilab_simulation/map/buvette.pgm");
-//    Divide div = Divide(image, 10);
+    // Charger une image OpenCV en binaire
+    cv::Mat image = cv::imread("/home/spi-2019/test1.png", cv::IMREAD_GRAYSCALE);
+    Divide div = Divide(image, 5);
     //print dimensions
+    //cout << "rows: " << div.get_rows() << endl;
+    //cout << "cols: " << div.get_cols() << endl;
 
+    div.display_image_with_tab();
+
+
+    // diviser la map
+    int nb_celles = div.divide_map();
+    ROS_INFO("============= INFO =======================");
+    ROS_INFO("Nombre lignes: %d", div.get_rows());
+    ROS_INFO("Nombre colonnes: %d", div.get_cols());
+    ROS_INFO("Pas: %d", div.get_pas());
+    ROS_INFO("Nombre de subcells: %d", nb_celles);
+    ROS_INFO("==========================================");
+
+    //display
+    div.display_subcells();
 
 
 
