@@ -17,15 +17,24 @@ class Divide{
 
         // the map reçu par le noeud map_processing
         cv::Mat map_image_original;
-        //dimensions
+        //dimensions en pixels de l'image !
         int rows;
         int cols;
 
         //pas de la grille pour permettre de diviser la map
         int pas;
 
-        // un tableau de subcells via la bib C++
-        std::vector<Subcell> subcells;
+        // l'occupancy grid sous forme de tableau 2D de subcells
+        std::vector<std::vector<Subcell>> subcells;
+
+        // tableau avec seulement les subcells libres
+        //std::vector<Subcell> subcells_free;
+        std::vector<Subcell*> subcells_free;
+
+        int nb_rows_discrete;
+        int nb_cols_discrete;
+
+        int nb_free_nodes;
 
     public :
 
@@ -45,16 +54,44 @@ class Divide{
         void display_subcells();
 
         //for debug
-        void display_image_with_tab();
+        void get_rid_inconsitencies();
+
+        cv::Mat filter_free_subcells();
+
+        void build_graph_free_subcells();
+
+        void display_subcell_state(std::vector<int> path);
+
+    
 
 
         // getters
-        std::vector<Subcell> get_subcells();
+        std::vector<std::vector<Subcell>> get_subcells();
+
+        std::vector<Subcell*> get_subcells_free(){
+            return this->subcells_free;
+        }
+
+        Subcell* get_one_subcell_free_with_index(int index){
+            return this->subcells_free[index];
+        
+        }
+
+
+
+
+
         cv::Mat get_map_image_original();
         int get_pas();
 
         int get_rows();
         int get_cols();
+
+        int get_nb_rows_discrete();
+        int get_nb_cols_discrete();
+
+        int get_nb_free_nodes();
+
 
 };
 

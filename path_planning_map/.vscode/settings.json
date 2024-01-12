@@ -23,10 +23,7 @@
         "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
         "/opt/ros/noetic/lib/python3/dist-packages"
     ],
-    "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "limits": "cpp",
-        "map": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -52,6 +49,7 @@
         "cstdint": "cpp",
         "deque": "cpp",
         "list": "cpp",
+        "map": "cpp",
         "set": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
@@ -78,6 +76,7 @@
         "iosfwd": "cpp",
         "iostream": "cpp",
         "istream": "cpp",
+        "limits": "cpp",
         "mutex": "cpp",
         "new": "cpp",
         "ostream": "cpp",
@@ -90,7 +89,6 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp",
-        "*.ipp": "cpp"
+        "variant": "cpp"
     }
 }

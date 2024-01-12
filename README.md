@@ -109,6 +109,10 @@ But en 2 étape :
 ![Alt text](images/divide.png)
 
 
+__Resultats__
+
+![Alt text](images/grid/comparison.png)
+
 # Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
 
 

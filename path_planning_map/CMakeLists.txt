@@ -25,6 +25,7 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/Divide.cpp
   src/Subcell.cpp
+  src/Dijsktra.cpp
 
 )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})

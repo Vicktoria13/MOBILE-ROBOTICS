@@ -14,17 +14,32 @@ Divide::Divide(cv::Mat map_image_original, int pas){
     /**
      * @brief Construct a new Divide:: Divide object
      * 
-     * @param map_image_original : la map
+     * @param map_image_original : la map obtenu via openCV
      * @param pas : la taille des subcells
      * 
      */
 
+    ROS_INFO("INITIALISATION DU TABLEAU DE SUBCELLS");
     this->map_image_original = map_image_original;
     this->pas = pas;
 
     // on recupere les dimensions de la map
     this->rows = map_image_original.rows;
     this->cols = map_image_original.cols;
+
+ 
+    this->nb_rows_discrete = this->rows / pas;
+    this->nb_cols_discrete = this->cols / pas;
+
+    // creation d'un tableau 2D pour stocker les subcells
+    this->subcells = std::vector<std::vector<Subcell>>(this->nb_rows_discrete, 
+                                                       std::vector<Subcell>(this->nb_cols_discrete, Subcell(false, pas, 0, 0, -1)));
+    //que les free : on initie un tableau null
+    this->subcells_free = std::vector<Subcell*>(0, nullptr);
+    
+
+
+    this->nb_free_nodes = 0;
 
 }
 
@@ -36,35 +51,67 @@ int Divide::divide_map(){
      * 
      */
 
+    ROS_INFO("DIVISION DE LA MAP EN SOUS CELLULES");
+
 
     // on parcourt les ROI de la map, de taille pas*pas
     int compteur_subcells = 0;
 
+    int id ;
+    int nodes_libres = 0;
     for (int r = 0; r < rows; r+=pas) {
         for (int c = 0; c < cols; c+=pas) {
 
             // on verifie que la subcell ne depasse pas de la map
-            if (r < rows && c  < cols){
+            if (r+pas <= rows and c+pas <=cols){
                 compteur_subcells++;
                 cv::Mat sous_rectangle = map_image_original(cv::Rect(c, r, pas, pas));
                 bool is_occupied = detect_subcells(sous_rectangle);
 
        
-                subcells.push_back(Subcell(is_occupied, pas, c, r, compteur_subcells));
+                // on range dans le tab 2D
+                int index_row = r/pas;
+                int index_col = c/pas;
+
+           
+                if (not is_occupied){
+                    id = nodes_libres;
+                    nodes_libres++;
+                }
+
+                else{
+                    id = -1;
+                }
+
+                // on cree la subcell
+                
+                // on l'ajoute dans le tableau 2D
+                subcells[index_row][index_col] = Subcell(is_occupied, pas, c, r, id);
+
                 
               
             }
             
         }
-        //fin de la ligne r
-        //ROS_INFO("fin de la ligne %d", r);
-        //ROS_INFO("compteur_subcells: %d", compteur_subcells);
+      
     }
 
-    //retourne la taille du tableau de subcells
-    return compteur_subcells;
 
-    
+    //pour chaque subcell libre de SUBCELLS, on ajoute ses voisins adjacents
+    ROS_INFO("il y a %d subcells libres", nodes_libres);
+    this->nb_free_nodes = nodes_libres;
+    ROS_INFO("DIVISION TERMINEE =======> Calcul des voisins adjacents ...");
+
+    for (int i = 0; i < subcells.size(); i++) {
+        for (int j = 0; j < subcells[i].size(); j++) {
+            if (not subcells[i][j].get_is_occupied()){                
+                subcells[i][j].add_voisin_adjacent(&subcells);
+            }
+        }
+    }
+
+    ROS_INFO("CHAQUE SUBCELL A SES VOISINS ADJACENTS !");
+    return compteur_subcells;   
 
 }
 
@@ -94,7 +141,6 @@ bool Divide::detect_subcells(cv::Mat sous_rectangle){
 
         }
     }    
-    //cv::imwrite("/home/spi-2019/res/libre/" + std::to_string(random()) + ".png", sous_rectangle);
     return false;
 
 }
@@ -103,64 +149,201 @@ bool Divide::detect_subcells(cv::Mat sous_rectangle){
 
 void Divide::display_subcells(){
 
+    // Est appelée apres DIvide::Diide() donc elle les voisins ont déja été calculés.
 
-    // affiche sous forme d'image et enregistre
     // la fenetre est séparée en 2 : a gauche, la map d'origine, a droite , la map avec les subcells avec un grillage
     cv::Mat map_image = map_image_original.clone();
-
-    //convert to RGB
     cv::cvtColor(map_image, map_image, cv::COLOR_GRAY2RGB);
 
     // on creer une image RGB
     cv::Mat map_image_subcells = map_image_original.clone();
     cv::cvtColor(map_image_subcells, map_image_subcells, cv::COLOR_GRAY2RGB);
 
-    // on parcourt les subcells
-    for (int i = 0; i < subcells.size(); i++) {
-        Subcell subcell = subcells[i];
-        // on recupere les coordonnées de la subcell
-        int x = subcell.get_x();
-        int y = subcell.get_y();
-        int size = subcell.get_size();
+    //on cree une image noir ou on ne metra que les cases libres en blancs sur fond noir
+    cv::Mat map_free_subcells = cv::Mat::zeros(rows, cols, CV_8UC3);
 
-        // on dessine un rectangle situé aux coordonnées de la subcell : celles occupées sont en B, celles libre en vert
-        if (subcell.get_is_occupied())
-        {
-            cv::rectangle(map_image_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 0, 255), 1);
-        }     
+  
+
+
+    // D'abord les cellules occupés : on les trace en rouge
+    for (int i = 0; i < subcells.size(); i++) {
+        for (int j = 0; j < subcells[i].size(); j++) {
+            // on recupere les coordonnées de la subcell
+            int x = subcells[i][j].get_x();
+            int y = subcells[i][j].get_y();
+            int size = subcells[i][j].get_size();
+
+            if (subcells[i][j].get_is_occupied())
+            {
+                cv::rectangle(map_image_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 0, 255), 1); //bleu
+            }
+
+             if (not subcells[i][j].get_is_occupied() )
+            {
+                // 1 signifie rectangle vide, -1 signifie rectangle plein
+                cv::rectangle(map_image_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 0, 0), 1); //rouge
+
+             
+            }
+          
+        }
     }
 
-    //2e boucle pour dessiner par dessus les lignes verticales et horizontales
-    for (int i = 0; i < subcells.size(); i++) {
-        Subcell subcell = subcells[i];
-        // on recupere les coordonnées de la subcell
-        int x = subcell.get_x();
-        int y = subcell.get_y();
-        int size = subcell.get_size();
+    cv::rectangle(map_image_subcells, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
 
-        // on dessine un rectangle situé aux coordonnées de la subcell : celles occupées sont en B, celles libre en vert
-        if (not subcell.get_is_occupied())
-        {
-            cv::rectangle(map_image_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 0, 0), 1);
-        }     
-    }
+    map_free_subcells = filter_free_subcells();
+    cv::rectangle(map_free_subcells, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
 
-    // on concatene les 2 images
+    cv::rectangle(map_image, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
+
+    // on concatene les 3 images
     cv::Mat map_image_concat;
+    cv::Mat map_2_images;
+
+
     cv::hconcat(map_image, map_image_subcells, map_image_concat);
+    cv::hconcat(map_image_concat, map_free_subcells, map_image_concat);
+    cv::hconcat(map_image, map_free_subcells, map_2_images);
+    
+    //  On ajoute pour une subcell libre au hasard ces voisins via des carrés de couleur 
+    // random entre 0 et this->nb_rows_discrete
+    
+    // on parcoure la grille de subcells et on prend la premiere subcell libre
+    // on recupere ses voisins adjacents
+
+    
+
+    // Image test voisins
+    cv::Mat test_voisins = map_free_subcells.clone();
+
+    //on cherche la n-ieme subcell libre
+    int n=51;
+    int i = 0;
+    int j = 0;
+    int compteur = 0;
+    while (compteur < n){
+        if (not subcells[i][j].get_is_occupied()){
+            compteur++;
+        }
+        j++;
+        if (j == subcells[i].size()){
+            j = 0;
+            i++;
+        }
+    }
+
+
+    //on le colorie en magenta
+    int x = subcells[i][j].get_x();
+    int y = subcells[i][j].get_y();
+    int size = subcells[i][j].get_size();
+    cv::rectangle(test_voisins, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 0, 255), -1);
+
+    // on recupere ses voisins
+    std::vector<Subcell*>* voisins = subcells[i][j].get_voisins();
+
+    //colorie en vert les voisins
+    for (int k = 0; k < voisins->size(); k++) {
+        int x = voisins->at(k)->get_x();
+        int y = voisins->at(k)->get_y();
+        int size = voisins->at(k)->get_size();
+        cv::rectangle(test_voisins, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(187, 255, 0), -1);
+    }
+  
+    int nb_voisins_adjacents = voisins->size();
+    
 
     // on enregistre
-    cv::imwrite("/home/spi-2019/compare.png", map_image_concat);
+
+    
+    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/occupancy_grid_discretized.png", map_2_images);
+    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/map_discrete.png", map_free_subcells);
+    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/compare.png", map_image_concat);
+    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/test_voisins.png", test_voisins);
 
     
 
 }
 
 
-void Divide::display_image_with_tab(){
-    // affiche this->map_image_original sous forme de tab dans le terminal
+
+
+void Divide::display_subcell_state(std::vector<int> path){
+    /**
+     * @brief Permet d'afficher les subcells avec leur etat (libre ou pas)
+     * 
+     */
     
 
+    // creer une image : pour l'instant noir
+
+    cv::Mat draw = cv::Mat::zeros(rows, cols, CV_8UC3);
+
+    // on parcourt les subcells
+    for (int i=0;i<subcells.size();i++){
+        for (int j=0;j<subcells[i].size();j++){
+
+            // on recupere les coordonnées de la subcell
+            int x = subcells[i][j].get_x();
+            int y = subcells[i][j].get_y();
+            int size = subcells[i][j].get_size();
+
+            if (subcells[i][j].get_is_occupied()){
+                cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 0, 0), -1); //noit
+                
+            }
+            else{
+                cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 255, 255), -1); //blanc
+                cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 255, 0), 1); //vert
+            }
+
+            //tracer du path en mauve
+            for (int k = 0; k < path.size(); k++) {
+
+
+                if (subcells[i][j].get_id() == path[k]){
+
+                    //begin
+                    if (k==0){
+                        cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 0, 255), -1); //blue
+                    }
+
+                    else if (k==path.size()-1){ //end
+                        cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(134, 0, 0), -1); //red
+                    }
+                    else{
+                        //yellow
+                        cv::rectangle(draw, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 255, 255), -1); //yellow
+                    }
+
+                    break;  
+
+                }
+             
+
+            }
+         
+
+        }
+           
+    }
+
+
+
+    //save
+    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/path_dijsktra.png", draw);
+
+    
+}
+
+
+
+
+void Divide::get_rid_inconsitencies(){
+    // affiche this->map_image_original sous forme de tab dans le terminal
+    
+    ROS_INFO("Permet d'avoir des valeurs binaires sur la map");
+    ROS_INFO("%d lignes et %d colonnes", this->rows, this->cols);
     cv::Mat tmp = cv::Mat::zeros(rows, cols, CV_8UC1);
     for (int r = 0; r < tmp.rows; r++) {
         for (int c = 0; c < tmp.cols; c++) {
@@ -177,47 +360,78 @@ void Divide::display_image_with_tab(){
     }
 
     this->map_image_original = tmp.clone();
-    /*
-    int nb_unknown = 0;
 
-    cv::Mat tmp = map_image_original.clone();
+    cv::imwrite("/home/spi-2019/tmp.png", tmp);
+    ROS_INFO("NORMALEMENT tmp.png est identique a la map de depart !");
     
-    for (int r = 0; r < tmp.rows; r++) {
-        for (int c = 0; c < tmp.cols; c++) {
-                
-                int8_t map_value = tmp.at<uchar>(r, c);
-                // Si 0, alors c'est noir, donc c occupé
-                if (map_value == 0 ){
-                    nb_noir++;
-                }
-                else if (map_value == 255){
-                    nb_blanc++;
-                }
+}
 
-                else{
-                    nb_unknown++;
-                }
+
+
+
+void Divide::build_graph_free_subcells(){
+    /**
+     * @brief Permet de construire le graph des subcells libres pour l'algorithme de dijsktra
+     * ATTENTION !! Chaque subcell libre a une liste de pointeurs vers ses voisins adjacents ... qui sont situés dans le tableau 2D de subcells !!
+     * Ce n'est pas ce qu'on veut, on veut que chaque subcell libre ait une liste de pointeurs vers ses voisins adjacents ... qui sont situés dans le tableau 1D de subcells_free !!
+     */
+
+    // remplissage du tableau 1D subcells_free qui est un tableau de pointeurs vers des subcells libres de subcells[][]
+    ROS_INFO("CONSTRUCTION DU GRAPH DES SUBCELLS LIBRES ... ");
+
+    for (int i = 0;i<subcells.size();i++){
+        for (int j = 0;j<subcells[i].size();j++){
+            if (not subcells[i][j].get_is_occupied()){
+                this->subcells_free.push_back(&(subcells[i][j]));
             }
-            
+        }
     }
 
-    ROS_INFO("nb_blanc: %d", nb_blanc);
-    ROS_INFO("nb_noir: %d", nb_noir);
-    ROS_INFO("nb_unknown: %d", nb_unknown);
-    ROS_INFO("==========================================");   
-
-    cv::imwrite("/home/spi-2019/caca.png", tmp);
-    */
+    //il faut que le pointeur pointe vers une subcell du tableau 1D subcells_free
+    ROS_INFO("CONSTRUCTION TERMINEE : il y a %d adresses de subcells dans subcells_free", subcells_free.size());
 }
+
+
+
+cv::Mat Divide::filter_free_subcells(){
+
+    /**
+     * @brief Permet de filtrer les subcells libres, et l'enregistrer sur fond noir dans une image
+     * 
+     */
+
+    // cree une image
+    cv::Mat only_free = cv::Mat::zeros(rows, cols, CV_8UC3);
+
+    for (int i = 0; i < subcells.size(); i++) {
+        
+        for (int j = 0; j < subcells[i].size(); j++) {
+            int x = subcells[i][j].get_x();
+            int y = subcells[i][j].get_y();
+            int size = subcells[i][j].get_size();
+
+            if (not subcells[i][j].get_is_occupied()){
+  
+                cv::rectangle(only_free, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 255, 255), -1);
+                cv::rectangle(only_free, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 255, 0), 1);
+            }
+           
+        }
+    }
+
+    // on enregistre
+    return only_free;
+}
+
+
 
 
 // getters
 
 
-std::vector<Subcell> Divide::get_subcells(){
+std::vector<std::vector<Subcell>> Divide::get_subcells(){
     return subcells;
 }
-
 
 int Divide::get_pas(){
     return pas;
@@ -232,3 +446,17 @@ int Divide::get_rows(){
 int Divide::get_cols(){
     return cols;
 }
+
+
+int Divide::get_nb_rows_discrete(){
+    return nb_rows_discrete;
+}
+
+int Divide::get_nb_cols_discrete(){
+    return nb_cols_discrete;
+}
+
+int Divide::get_nb_free_nodes(){
+    return nb_free_nodes;
+}
+

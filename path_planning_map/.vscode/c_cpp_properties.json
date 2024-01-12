@@ -1,0 +1,37 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/spi-2019/mainblades_ws/install/ouster_ros/include/**",
+        "/home/spi-2019/mainblades_ws/install/mcl_3dl/include/**",
+        "/home/spi-2019/mainblades_ws/install/pcl_ros/include/**",
+        "/home/spi-2019/mainblades_ws/install/pcl_conversions/include/**",
+        "/home/spi-2019/mainblades_ws/install/fast_gicp/include/**",
+        "/home/spi-2019/mainblades_ws/install/dji_com_proto/include/**",
+        "/home/spi-2019/catkin_ws/install/tf_combiner/include/**",
+        "/home/spi-2019/catkin_ws/install/mb_utils/include/**",
+        "/home/spi-2019/catkin_ws/install/mb_externals/include/**",
+        "/home/spi-2019/catkin_ws/install/mb_constants/include/**",
+        "/home/spi-2019/catkin_ws/install/mb_actions/include/**",
+        "/home/spi-2019/catkin_ws/install/dji_services/include/**",
+        "/home/spi-2019/catkin_ws/install/dji_msgs/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/spi-2019/mainblades_ws/install/symmetri/include/**",
+        "/home/spi-2019/mainblades_ws/install/ruckig-pro/include/**",
+        "/home/spi-2019/robmob_ws/src/my_teleop/include/**",
+        "/home/spi-2019/robmob_ws/src/path_planning_map/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
