@@ -119,9 +119,7 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
         if (not (*full_grid)[indice_ligne - 1][indice_colonne].get_is_occupied()){
             this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne]));
             this->nb_voisins_adjacents++;
-
             this->cost_for_each_voisin.push_back(1);
-            
         
         }
     }
