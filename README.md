@@ -1,6 +1,16 @@
 
+# Robotique Mobile : Path Planning et Map Building
 
-Tableau de commande :
+
+### Objectif du projet :
+
+- Exploration cartographique à l'aide du robot Pionneer avec un joystick.
+- Implémenter un retour autonome à la base de chargement en utilisant la planification de trajectoire.
+
+L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d'un LIDAR et d'encodeurs.
+
+### Quelques commandes
+
 | commande|A faire depuis| tâche|
 | :---: | :---: | :---: |
 | ```catkin_make ``` |``` ~/robmob_ws``` | Pour compiler|
@@ -13,14 +23,46 @@ Tableau de commande :
 | ``` killall gzserver ``` | | Pour fermer toute instance de gazebo|
 | ``` rosrun map_server map_saver --occ 90 --free 10 -f map_rob_mob map:=/map ``` | | Pour enregistrerla map.pgm dans le chemin de map:=""|
 
-### Un package ROS 
-- dossier script = python
-- dossier include
-- dossier srv avec le src
-- dossier launch
-- .config 
 
-__Creer un package ROS C++__
+### Comment lancer la simulation :
+```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
+
+
+## 1) Path Planning :  Discretiser l'occupancy grid
+
+
+Pour la discrétisation, nous divisons la grille d'occupation en grilles de taille PAS pixels. Si un pixel est noir (=obstacle), la cellule entière est considérée comme un obstacle.
+
+__Resultats__
+
+
+
+
+
+<img src="images/grid/occupancy_grid_discretized.png" width="500" height="250"> 
+
+<img src="images/grid/comparison.png" width="600" height="200"> 
+
+
+
+## 2) Dijsktra
+
+On implémente le pseudo code ci-dessous
+
+<img src="images/Code/code_dij.png" width="600" height="300"> 
+
+
+
+### Résultats
+<img src="images/marge.png" width="900" height="200"> 
+
+
+
+<img src="images/path_env.png" width="650" height="300"> 
+
+
+
+### Annexe : Creer un package ROS C++
 
 1- On lance la commande depuis ```ws/src```
 ```catkin_create_pkg my_teleop roscpp sensor_msgs geometry_msgs```
@@ -37,27 +79,10 @@ __Creer un package ROS C++__
 
 
 
-### pour lancer le minilab, lancer la commande suivante :
-
-```roslaunch minilab_simulation minilab_simulation.launch```
-
-Remarque : pour éviter de ralentir l'ordi, dans le fichier :
-```minilab_simulation/launch/minilab_gazebo.launch``` , mettre la valeur de ```gui``` à ```false```
-
-### pour lancer le mapping, lancer la commande suivante :
-```rosrun gmapping slam_gmapping```
-
-### pour lancer la téléopération, lancer la commande suivante :
-```roslaunch my_teleop command_joystick.launch```
-
-- affichage Gazebo :
-![Alt text](images/gazebo_start.png)
-
-- affichage rqt :
-![Alt text](images/rqt.png)
 
 
-#Ecrire un launch file
+
+### Annexe : Ecrire un launch file
 
 ```
 <?xml version="1.0" ?>
@@ -76,11 +101,11 @@ Ce code signifie que l'on lance le noeud :
 - avec l'option ```output="screen"``` pour afficher les messages dans le terminal
 
 
-# Seance 2
+### Annexe : ajout d'open CV dans le package
 
 But : on rajoute un noeud qui permet de lire les messages du topic ```/map``` de type ```nav_msgs/OccupancyGrid```. On affcihe la map dans une fenetre type opencv.
 
-## Installation d'opencv
+__Installation d'opencv__
 
 -``` sudo apt install libopencv-dev```
 - Rajouter dans le ```CMakeLists.txt``` :
@@ -89,36 +114,23 @@ But : on rajoute un noeud qui permet de lire les messages du topic ```/map``` de
 ```target_link_libraries(my_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})```
 
 
-<!-- ### Pour interface GRID MAP avec OPENCV
-```sudo apt-get install ros-noetic-grid-map```
- -->
-
 
  Voir ```map_process.cpp```
 
-# Seance 3
-
-But en 2 étape :
-
-- En partant d'un point de départ, explorer entièrement la carte par téléopération
-- Une fois la carte entièrement explorée, le robot doit revenir au point de départ de manière autonome via algo de plannif
-
-```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
 
 
-![Alt text](images/divide.png)
 
 
-__Resultats__
 
-![Alt text](images/grid/comparison.png)
 
-# Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
+### Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
 
 
 
 - Lancer le Minilab simu
 ```roslaunch minilab_simulation minilab_simulation.launch```
+Remarque : pour éviter de ralentir l'ordi, dans le fichier :
+```minilab_simulation/launch/minilab_gazebo.launch``` , mettre la valeur de ```gui``` à ```false```
 
 - Lancer gmapping
 ```rosrun gmapping slam_gmapping```
@@ -156,6 +168,10 @@ Le but est de pouvoir lancer rviz via le launch file, une fois tous les autres n
 
 ```target_link_libraries(map_process_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})```
 
+
+# Annexe : UML Objet Oriented Programming
+
+<center><img src="images/Code/RobMob.png" width="400" height="400"></center>
 
 # A EVITER
 
