@@ -69,6 +69,7 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
      */
     
 
+    ROS_INFO("DEBUT DE LA RECHERCHE DU CHEMIN");
     std::vector<int> path;
     
     /*********** ETAPE 1 : /on met la distance de start a 0, et les autres a infini ***********/
@@ -102,8 +103,6 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
         }
         // on set le flag is_visited a true
         this->unvisited->at(indice_minimum_unvisited)->set_is_visited(true);
-
-        
         this->nb_unvisited_node_left--;
         this->nb_visited_node++;
         

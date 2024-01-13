@@ -11,17 +11,6 @@
 using namespace std;
 
 #define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/buvette.pgm"
-///home/spi-2019/test1.png
-///home/spi-2019/robmob_ws/src/minilab_simulation/map/buvette.pgm
-
-
-
-
-
-
-
-
-
 
 
 
@@ -114,7 +103,7 @@ int main(int argc, char** argv)
     //Subcell* end = div.get_one_subcell_free_with_index(5);
 
 
-    std::vector<int> path = dij.launch_dijsktra(3,1230);
+    std::vector<int> path = dij.launch_dijsktra(1,1100);
 
     div.display_subcell_state(path);
 

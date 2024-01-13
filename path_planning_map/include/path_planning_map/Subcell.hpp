@@ -74,6 +74,8 @@ public:
     
     bool get_is_visited();
 
+    bool check_neighbour_around_marge(std::vector<std::vector<Subcell>> *full_grid,int marge, int* distance_detected_from_wall);
+
 
 };
 
