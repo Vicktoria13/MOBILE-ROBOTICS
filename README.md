@@ -2,6 +2,11 @@
 # Robotique Mobile : Path Planning et Map Building
 
 
+| **Test passed**                                              |
+| ------------------------------------------------------------ |
+|![ROS-Noetic](https://img.shields.io/badge/ROS-Noetic-red.svg) ![Ubuntu-20.04](https://img.shields.io/badge/Ubuntu-20.04-blue.svg)
+
+
 ### Objectif du projet :
 
 - Exploration cartographique à l'aide du robot Pionneer avec un joystick.

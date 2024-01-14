@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/cleanhouse.pgm"
+#define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/test.pgm"
 
 
 
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
 
 
-    Divide div = Divide(image,17);
+    Divide div = Divide(image,3);
 
     // Necessaire si jamais valeurs incohérentes en entrée / systeme différent
     //div.get_rid_inconsitencies();
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     //Subcell* end = div.get_one_subcell_free_with_index(5);
 
 
-    std::vector<int> path = dij.launch_dijsktra(1,1221);
+    std::vector<int> path = dij.launch_dijsktra(1,540);
 
     div.display_subcell_state(path);
 
