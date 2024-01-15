@@ -8,11 +8,12 @@ class Dijsktra
 {
 private:
     int nb_nodes;
-    //std::vector<std::vector<Subcell>> graph;
-
 
     //pointeur vers un tableau de pointeurs
     std::vector<Subcell*>* unvisited;
+
+    // vecteur des pointeurs sur subcells du chemin
+    std::vector<Subcell*> sub_path;
 
     std::vector<Subcell> previous;
 
@@ -26,6 +27,10 @@ public:
 
     // algo dijsktra : retourne une liste de coordonnées [[1,2], [3,4], [5,6] ...]
     std::vector<int> launch_dijsktra(int indice_start, int indice_end);
+
+    std::vector<Subcell*> get_sub_path(){
+        return this->sub_path;
+    }
 };
 
 

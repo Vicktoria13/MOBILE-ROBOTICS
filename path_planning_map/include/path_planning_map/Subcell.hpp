@@ -69,12 +69,10 @@ public:
     // permet d'ajouter les voisins adjacents + cout unitaire ==> premier passage
     void add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid);
 
-
+    bool check_neighbour_around_marge(std::vector<std::vector<Subcell>> *full_grid,int marge, int* distance_detected_from_wall);
     int nb_voisins_one_subcell(std::vector<std::vector<Subcell>> *full_grid);
     
     bool get_is_visited();
-
-    bool check_neighbour_around_marge(std::vector<std::vector<Subcell>> *full_grid,int marge, int* distance_detected_from_wall);
 
 
 };

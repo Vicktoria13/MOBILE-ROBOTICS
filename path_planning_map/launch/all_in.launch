@@ -17,7 +17,8 @@
    <!-- Lancer l'équivalent de rosrun path_planning_map map_process_node -->
    <node pkg="path_planning_map" type="map_process_node" name="map_processing" output="screen"/>
 
-   <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/>
+   <!--
+   <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/> -->
 
 
 </launch>

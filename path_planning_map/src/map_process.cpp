@@ -31,6 +31,10 @@ public:
         // ROS info la taille de la map
         ROS_INFO("Map size: %d x %d", map_msg->info.width, map_msg->info.height);
         
+        // ROS info la résolution de la map
+        ROS_INFO("Map resolution : %f m/cell", map_msg->info.resolution);
+
+
     }
 
 
@@ -51,6 +55,24 @@ public:
         // 0 est la couleur noire, 255 la couleur blanche
         cv::Mat map_image((H_MAX-H_MIN), (W_MAX-W_MIN), CV_8UC1);
         int seuil = 50;
+
+        // Taille de la map en mètres
+        float resolution = map_msg.info.resolution;
+        ROS_INFO("Map size (meters) : %f x %f", map_msg.info.width * resolution, map_msg.info.height * resolution);
+
+        // Coordonnées dans le monde réel du pixel en haut à gauche de l'image
+        float origin_real_world_x = map_msg.info.origin.position.x;
+        float origin_real_world_y = map_msg.info.origin.position.y;
+        
+        ROS_INFO("Map origin : x : %f, y : %f", origin_real_world_x, origin_real_world_y);
+        
+        // Coordonnée dans le monde réel du pixel (0,0 de l'image)
+        float origin_image_real_world_x = origin_real_world_x + W_MIN*0.05;
+        float origin_image_real_world_y = origin_real_world_y + H_MIN*0.05;
+
+        ROS_INFO("Image origin in real world : x : %f, y : %f", origin_image_real_world_x,origin_image_real_world_y);
+
+
 
         for (int r = W_MIN; r < W_MAX; r++) {
             for (int c = H_MIN; c < H_MAX; c++) {
@@ -94,7 +116,7 @@ public:
             cv::waitKey(30);
 
             //save in grayscale
-            cv::imwrite("/home/spi-2019/test1.png", map_image);
+            cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/map_.png", map_image);
 
             // TRAITEMENT DE LA MAP
             Divide div = Divide(map_image, 10);

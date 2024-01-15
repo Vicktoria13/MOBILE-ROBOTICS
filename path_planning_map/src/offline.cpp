@@ -10,9 +10,7 @@
 
 using namespace std;
 
-#define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/test.pgm"
-
-
+#define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/cleanhouse.pgm"
 
 cv::Mat from_pgm_to_binary(std::string path){
   
@@ -35,7 +33,7 @@ cv::Mat from_pgm_to_binary(std::string path){
         }
     }
 
-    cv::imwrite("/home/spi-2019/convert.png", image_binary);
+    cv::imwrite("/home/spi/ros_ws/convert.png", image_binary);
     return image_binary;
 }
 
@@ -72,7 +70,7 @@ int main(int argc, char** argv)
 
 
 
-    Divide div = Divide(image,3);
+    Divide div = Divide(image,18);
 
     // Necessaire si jamais valeurs incohérentes en entrée / systeme différent
     //div.get_rid_inconsitencies();
@@ -101,14 +99,24 @@ int main(int argc, char** argv)
     //on recupere les coordonnees de depart et d'arrivee
     //Subcell* start = div.get_one_subcell_free_with_index(3);
     //Subcell* end = div.get_one_subcell_free_with_index(5);
+    
+    std::vector<int> path = dij.launch_dijsktra(3,1230);
 
 
-    std::vector<int> path = dij.launch_dijsktra(1,540);
-
+    ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
     div.display_subcell_state(path);
-
+    
 
     
+    for (Subcell* ptr_sub : dij.get_sub_path()){
+        float x = (ptr_sub->get_x()*0.05 - 20.0);
+        float y = (ptr_sub->get_y()*0.05 - 20.0);
+        ROS_INFO("(X,Y) : (%f,%f) ", x,y);
+    }
+
+
+    /************************** PUBLICATION ***************************/
+
     ros::Publisher image_pub = nh.advertise<sensor_msgs::Image>("/image_topic", 1);
 
     ros::Rate rate(1);  // Fréquence de publication (1 Hz, par exemple)

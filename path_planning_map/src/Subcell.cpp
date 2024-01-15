@@ -3,9 +3,6 @@
 
 
 #define MARGE 3
-//marge en nombre de pixels
-// cela signifie que les 2 pixels a partir d'un bord de mur auront au cout elevé
-
 
 Subcell::Subcell(bool is_occupied, int size, int x, int y,int id){
 
@@ -49,6 +46,8 @@ Subcell::~Subcell(){
      * @brief Destroy the Subcell:: Subcell object
      * 
      */
+
+    //destruction pour les vecteurs
     
     // destruction pointeurs vers les voisins
     for (int i = 0; i < this->voisins_adjacents.size(); i++){
@@ -63,7 +62,6 @@ Subcell::~Subcell(){
 int Subcell::nb_voisins_one_subcell(std::vector<std::vector<Subcell>> *full_grid){
     /**
      * @brief Permet de savoir combien de voisins adjacents a une subcell
-     * Hypothese: la subcell en argument n'est pas un mur !
      * 
      */
 
@@ -255,6 +253,7 @@ bool Subcell::check_neighbour_around_marge(std::vector<std::vector<Subcell>> *fu
 }
 
 
+
 void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
 
 
@@ -345,147 +344,9 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
     
 
 
-
-    /*
-
-    // on regarde les voisins UP DOWN LEFT RIGHT
-    if (indice_ligne - 1 >= 0){
-        if (not (*full_grid)[indice_ligne - 1][indice_colonne].get_is_occupied()){
-            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne]));
-            this->nb_voisins_adjacents++;
-            
-            int i = 1;
-            bool flag_cout_deja_mis = false;
-
-            while (i <= MARGE and indice_ligne - i >= 0 and not flag_cout_deja_mis){
-                if (not (*full_grid)[indice_ligne - i][indice_colonne].get_is_occupied()){
-                    // le i-eme voisin du haut est n'est pas un mur, donc on regarde combien de voisins il a
-                    if ((*full_grid)[indice_ligne - i][indice_colonne].nb_voisins_one_subcell(full_grid) != 4){
-                        this->cost_for_each_voisin.push_back((MARGE - i+1) * 5);
-                        flag_cout_deja_mis = true;
-                    }
-                }
-
-            
-                i++;
-            }
-
-            if (not flag_cout_deja_mis){
-                this->cost_for_each_voisin.push_back(1);
-            }
-          
-
-        }
-    }
-
-    if (indice_ligne + 1 < (*full_grid).size()){
-        if (not (*full_grid)[indice_ligne + 1][indice_colonne].get_is_occupied()){
-            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne + 1][indice_colonne]));
-            this->nb_voisins_adjacents++;
-            
-            
-            int i = 1;
-            bool flag_cout_deja_mis = false;
-
-            while (i <= MARGE and indice_ligne + i < (*full_grid).size() and not flag_cout_deja_mis){
-                if (not (*full_grid)[indice_ligne + i][indice_colonne].get_is_occupied()){
-                    // le i-eme voisin du bas est n'est pas un mur, donc on regarde combien de voisins il a
-                    if ((*full_grid)[indice_ligne + i][indice_colonne].nb_voisins_one_subcell(full_grid) != 4){
-                        this->cost_for_each_voisin.push_back((MARGE - i+1) * 5);
-                        flag_cout_deja_mis = true;
-                    }
-                }
-
-                i++;
-            }
-
-            if (not flag_cout_deja_mis){
-                this->cost_for_each_voisin.push_back(1);
-            }
-        }
-    }
-
-    // plus je detecte un mur proche, plus i petit, plus le cout est eleve
-
-    if (indice_colonne > 0){
-        // on regarde le voisin de gauche
-        if (not (*full_grid)[indice_ligne][indice_colonne - 1].get_is_occupied()){
-            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne][indice_colonne - 1]));
-            this->nb_voisins_adjacents++;
-            
-            /*
-            if ( (*full_grid)[indice_ligne][indice_colonne - 1].nb_voisins_one_subcell(full_grid) == 4){
-                this->cost_for_each_voisin.push_back(1);
-            }
-            else{
-                this->cost_for_each_voisin.push_back(20);
-            }
-            
-
-           // on regarde pour le 1er voisins de gauche, le 2e, puis le 3e, jusqu'au MARGE-ieme
-           // pour le 1er : S'il n'est pas un mur, on regarde combien de voisins il a
-           // s'il n'en a pas 4 alors c'est sans doute un bord, donc on lui met un cout elevée de (MARGE=3 - 1) * 5 = 10
-           // s'il en a 4, alors on explore celui encore a gauche : s'il n'est pas un mur, on lui met un cout de (MARGE=3 - 2) * 5 = 5
-
-            int i = 1;
-            bool flag_cout_deja_mis = false;
-            
-            while (i <= MARGE and indice_colonne - i >= 0 and not flag_cout_deja_mis){
-                if (not (*full_grid)[indice_ligne][indice_colonne - i].get_is_occupied()){
-                    // le i-eme voisin de gauche est n'est pas un mur, donc on regarde combien de voisins il a
-                    if ((*full_grid)[indice_ligne][indice_colonne - i].nb_voisins_one_subcell(full_grid) != 4){
-                        this->cost_for_each_voisin.push_back((MARGE - i+1) * 5);
-                        flag_cout_deja_mis = true;
-                    }
-                }
-
-               
-                i++;
-
-                
-            }
-
-            if (not flag_cout_deja_mis){
-                this->cost_for_each_voisin.push_back(1);
-            }
-
-            
-        }
-    }
-
-
-
-    if (indice_colonne + 1 < (*full_grid)[0].size()){
-        // on regarde le voisin de droite
-        if (not (*full_grid)[indice_ligne][indice_colonne + 1].get_is_occupied()){
-            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne][indice_colonne + 1]));
-            this->nb_voisins_adjacents++;
-            
-            int i = 1;
-            bool flag_cout_deja_mis = false;
-
-            while (i <= MARGE and indice_colonne + i < (*full_grid)[0].size() and not flag_cout_deja_mis){
-                if (not (*full_grid)[indice_ligne][indice_colonne + i].get_is_occupied()){
-                    // le i-eme voisin de droite est n'est pas un mur, donc on regarde combien de voisins il a
-                    if ((*full_grid)[indice_ligne][indice_colonne + i].nb_voisins_one_subcell(full_grid) != 4){
-                        this->cost_for_each_voisin.push_back((MARGE - i+1) * 5);
-                        flag_cout_deja_mis = true;
-                    }
-                }
-
-              
-                i++;
-            }
-
-            if (not flag_cout_deja_mis){
-                this->cost_for_each_voisin.push_back(1);
-            }
-        }
-    }
-
-    */
-
 }
+
+
 
 //getter
 

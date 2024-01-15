@@ -13,8 +13,6 @@ Dijsktra::Dijsktra(std::vector<Subcell*>* only_free_node_from_grid,int nb_free_c
 
     this->unvisited = only_free_node_from_grid;
 
-    // previous et path sont vides 
-
     this->nb_unvisited_node_left = nb_free_cells;
     this-> nb_visited_node = 0;
 }
@@ -40,7 +38,6 @@ int Dijsktra::minDistance(){
    int min = std::numeric_limits<int>::max();
 
    //unvisited est donc de type std::vector<Subcell*>* : un pointeur vers un tableau de pointeur type Subcell
-
    //this->unvisited->at(i) est un pointeur vers une subcell situé a i
 
 
@@ -69,8 +66,8 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
      */
     
 
-    ROS_INFO("DEBUT DE LA RECHERCHE DU CHEMIN");
     std::vector<int> path;
+    std::vector<Subcell*> subcells_path;
     
     /*********** ETAPE 1 : /on met la distance de start a 0, et les autres a infini ***********/
     //on met la distance de start a 0 : unvisited est une adresse qui pointe vers un tableau d'adresses de subcells !!
@@ -86,9 +83,7 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
 
         //indice_minimum_unvisited : indice du subcell a distance minimum dans UNVISITED
         int indice_minimum_unvisited = minDistance(); 
-
         std::vector<Subcell*>* voisins = this->unvisited->at(indice_minimum_unvisited)->get_voisins();
-
 
         for (int S=0;S<voisins->size();S++){
 
@@ -103,6 +98,8 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
         }
         // on set le flag is_visited a true
         this->unvisited->at(indice_minimum_unvisited)->set_is_visited(true);
+
+        
         this->nb_unvisited_node_left--;
         this->nb_visited_node++;
         
@@ -111,13 +108,22 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
 
     //construction du chemin a partir des ID_PREVIOUS : on commence par le sommet d'arrivee END
     int current_id = indice_end;
+    Subcell* current_subcell = this->unvisited->at(current_id);
+
     while (current_id != indice_start){
         path.push_back(current_id);
+        subcells_path.push_back(current_subcell);
+
         current_id = this->unvisited->at(current_id)->get_id_previous();
+        current_subcell = this->unvisited->at(current_id);
     }
 
     path.push_back(indice_start);
 
+    Subcell* start_subcell = this->unvisited->at(indice_start);
+    subcells_path.push_back(start_subcell);
+
+    this->sub_path = subcells_path;
    
    ROS_INFO("FIN DE LA RECHERCHE DU CHEMIN : il y a %d nodes dans le path", path.size());
    return path;
