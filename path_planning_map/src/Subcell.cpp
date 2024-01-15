@@ -2,7 +2,6 @@
 #include <ros/ros.h>
 
 
-#define MARGE 3
 
 Subcell::Subcell(bool is_occupied, int size, int x, int y,int id){
 
@@ -254,14 +253,12 @@ bool Subcell::check_neighbour_around_marge(std::vector<std::vector<Subcell>> *fu
 
 
 
-void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
+void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, int margin){
 
-
+    ROS_INFO("Ajout des voisins avec une marge aux bords de %d pixels",margin);
 
     int indice_ligne = this->y / this->size;
     int indice_colonne = this->x / this->size;
-
-
 
 
     int distance_detected_from_wall = -1;
@@ -272,8 +269,8 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
             this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne]));
             this->nb_voisins_adjacents++;
 
-            if (not (*full_grid)[indice_ligne - 1][indice_colonne].check_neighbour_around_marge(full_grid,MARGE,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((MARGE - distance_detected_from_wall+1) * 25);
+            if (not (*full_grid)[indice_ligne - 1][indice_colonne].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -294,8 +291,8 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
             //cout : on regarde si le voisin du bas a un cerle de rayon MARGE autour de lui qui est bien libre
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
-            if (not (*full_grid)[indice_ligne + 1][indice_colonne].check_neighbour_around_marge(full_grid,MARGE,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((MARGE - distance_detected_from_wall+1) * 25);
+            if (not (*full_grid)[indice_ligne + 1][indice_colonne].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -313,8 +310,8 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
             //cout : on regarde si le voisin de gauche a un cerle de rayon MARGE autour de lui qui est bien libre
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
-            if (not (*full_grid)[indice_ligne][indice_colonne - 1].check_neighbour_around_marge(full_grid,MARGE,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((MARGE - distance_detected_from_wall+1) * 25);
+            if (not (*full_grid)[indice_ligne][indice_colonne - 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -332,8 +329,8 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid){
             //cout : on regarde si le voisin de droite a un cerle de rayon MARGE autour de lui qui est bien libre
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
-            if (not (*full_grid)[indice_ligne][indice_colonne + 1].check_neighbour_around_marge(full_grid,MARGE,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((MARGE - distance_detected_from_wall+1) * 25);
+            if (not (*full_grid)[indice_ligne][indice_colonne + 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
             }
             else{
                 this->cost_for_each_voisin.push_back(1);

@@ -44,7 +44,7 @@ Divide::Divide(cv::Mat map_image_original, int pas){
 }
 
 
-int Divide::divide_map(){
+int Divide::divide_map(int marge_for_voisins){
 
     /**
      * @brief On divise , cree subcell, leur attribue un bool et on stocke dans un tableau
@@ -105,7 +105,7 @@ int Divide::divide_map(){
     for (int i = 0; i < subcells.size(); i++) {
         for (int j = 0; j < subcells[i].size(); j++) {
             if (not subcells[i][j].get_is_occupied()){                
-                subcells[i][j].add_voisin_adjacent(&subcells);
+                subcells[i][j].add_voisin_adjacent(&subcells,marge_for_voisins);
             }
         }
     }
@@ -147,8 +147,7 @@ bool Divide::detect_subcells(cv::Mat sous_rectangle){
 
 
 
-void Divide::display_subcells(){
-
+void Divide::display_subcells(std::string path_folder){
     // Est appelée apres DIvide::Diide() donc elle les voisins ont déja été calculés.
 
     // la fenetre est séparée en 2 : a gauche, la map d'origine, a droite , la map avec les subcells avec un grillage
@@ -256,10 +255,10 @@ void Divide::display_subcells(){
     // on enregistre
 
     
-    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/occupancy_grid_discretized.png", map_2_images);
-    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/map_discrete.png", map_free_subcells);
-    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/compare.png", map_image_concat);
-    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/test_voisins.png", test_voisins);
+    cv::imwrite(path_folder+"occupancy_grid_discretized.png", map_2_images);
+    cv::imwrite(path_folder + "map_discrete.png", map_free_subcells);
+    cv::imwrite(path_folder+"compare.png", map_image_concat);
+    cv::imwrite(path_folder+"test_voisins.png", test_voisins);
 
     
 
@@ -268,7 +267,7 @@ void Divide::display_subcells(){
 
 
 
-void Divide::display_subcell_state(std::vector<int> path){
+void Divide::display_subcell_state(std::vector<int> path, std::string path_folder){
     /**
      * @brief Permet d'afficher les subcells avec leur etat (libre ou pas)
      * 
@@ -331,7 +330,7 @@ void Divide::display_subcell_state(std::vector<int> path){
 
 
     //save
-    cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/path_dijsktra.png", draw);
+    cv::imwrite(path_folder+"path_dijsktra.png", draw);
 
     
 }
@@ -360,9 +359,6 @@ void Divide::get_rid_inconsitencies(){
     }
 
     this->map_image_original = tmp.clone();
-
-    cv::imwrite("/home/spi-2019/tmp.png", tmp);
-    ROS_INFO("NORMALEMENT tmp.png est identique a la map de depart !");
     
 }
 

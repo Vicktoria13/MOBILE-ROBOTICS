@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(OpenCV)
-
+find_package(yaml-cpp REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -20,6 +20,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+  ${YAML_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME}
@@ -28,7 +29,8 @@ add_library(${PROJECT_NAME}
   src/Dijsktra.cpp
 
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} yaml-cpp
+)
 
 install(
   TARGETS ${PROJECT_NAME}
@@ -49,7 +51,7 @@ install(
 # - map_process_node pour l'affichage de la map via opencv
 
 add_executable(offline src/offline.cpp)
-target_link_libraries(offline ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(offline ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} )
 
 
 add_executable(map_process_node src/map_process.cpp)

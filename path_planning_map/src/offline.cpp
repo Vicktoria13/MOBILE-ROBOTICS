@@ -1,16 +1,19 @@
 #include <opencv4/opencv2/highgui.hpp>
 #include <iostream>
 #include <ros/ros.h>
+#include <ros/package.h>
+#include <string>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <yaml-cpp/yaml.h>
 
 #include "path_planning_map/Divide.hpp"
 #include "path_planning_map/Dijsktra.hpp"
 
 using namespace std;
 
-#define PATH_MAP "/home/spi-2019/robmob_ws/src/minilab_simulation/map/cleanhouse.pgm"
+#define NAME_MAP "cleanhouse.pgm"
 
 cv::Mat from_pgm_to_binary(std::string path){
   
@@ -32,21 +35,49 @@ cv::Mat from_pgm_to_binary(std::string path){
             }
         }
     }
-
-    cv::imwrite("/home/spi/ros_ws/convert.png", image_binary);
     return image_binary;
 }
 
 
+// pour appeler ce noeud avec rosrun, et un fichier yaml en argument avec param_yaml:=config.yaml
+//rosrun path_planning_map offline config_yaml:=src/path_planning_map/config/config.yaml
 int main(int argc, char** argv)
 {
     // Initialisation du nœud ROS
     ros::init(argc, argv, "simple_node");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~"); 
 
-    // Charger une image OpenCV en binaire
+
+
+    // YAML
+    std::string param_file_path;
+
+    // Récupérer le paramètre spécifié lors du lancement du nœud
+    nh.getParam("param_file", param_file_path);
     
-    //si image pgm
+    if (param_file_path.empty()) {
+        ROS_ERROR("Aucun fichier de paramètres spécifié.");
+        return -1;
+    }
+
+    ROS_INFO("Fichier de paramètres : %s", param_file_path.c_str());
+   
+
+
+
+    YAML::Node config = YAML::LoadFile(param_file_path);
+    //on recupere les parametres du yaml
+    int pas_divide = config["pas"].as<int>();
+    int marge = config["marge"].as<int>();
+    std::string folder_where_to_save_im = config["folder_image_saver"].as<std::string>();
+    std::string folder_where_are_maps_pgm = config["folder_where_are_the_pgm_map"].as<std::string>();
+
+
+
+    
+    std::string PATH_MAP = folder_where_are_maps_pgm + NAME_MAP;
+    ROS_INFO("PATH_MAP: %s", PATH_MAP.c_str());
+
     std::string extension_path = PATH_MAP;
     std::string extension = extension_path.substr(extension_path.size()-3,extension_path.size());
     ROS_INFO("Extension: %s", extension.c_str());
@@ -68,14 +99,14 @@ int main(int argc, char** argv)
         return -1;
     }
 
-
+    
 
     Divide div = Divide(image,18);
 
     // Necessaire si jamais valeurs incohérentes en entrée / systeme différent
     //div.get_rid_inconsitencies();
 
-    int nb_celles = div.divide_map();
+    int nb_celles = div.divide_map(marge);
 
     ROS_INFO("============= INFO =======================");
     ROS_INFO("Nombre lignes: %d", div.get_rows());
@@ -87,7 +118,7 @@ int main(int argc, char** argv)
     div.build_graph_free_subcells();
     
     /* =================================== FOR DEBUG  ===================================*/
-    div.display_subcells();
+    div.display_subcells(folder_where_to_save_im);
     /* =================================== FOR DEBUG  ===================================*/
 
     //////////////// DIJKSTRA ///////////////////////
@@ -104,7 +135,7 @@ int main(int argc, char** argv)
 
 
     ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
-    div.display_subcell_state(path);
+    div.display_subcell_state(path, folder_where_to_save_im);
     
 
     

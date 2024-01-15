@@ -39,6 +39,15 @@ L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d
 ### Comment lancer la simulation :
 ```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
 
+**Pour lancer le noeud Dijsktra**
+
+
+```rosrun path_planning_map offline _param_file:=PATH_TO_CONFIG_FILE```
+
+
+Exemple :
+
+```rosrun path_planning_map offline _param_file:=/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml```
 
 ## 1) Path Planning :  Discretiser l'occupancy grid
 

@@ -45,13 +45,13 @@ class Divide{
         virtual ~Divide(){};
 
         // une methode pour permettre de diviser la map en plusieurs parties
-        int divide_map();
+        int divide_map(int marge_for_voisins);
 
         bool detect_subcells(cv::Mat sous_rectangle);
 
         //display
 
-        void display_subcells();
+        void display_subcells(std::string path_folder);
 
         //for debug
         void get_rid_inconsitencies();
@@ -60,7 +60,7 @@ class Divide{
 
         void build_graph_free_subcells();
 
-        void display_subcell_state(std::vector<int> path);
+        void display_subcell_state(std::vector<int> path, std::string path_folder);
 
     
 
