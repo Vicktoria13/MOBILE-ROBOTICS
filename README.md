@@ -202,6 +202,21 @@ Quelques méthodes pour écrire les transformations entre les frames
 
 ![Alt text](images/tf/tf.png)
 
+
+## :warning: Annexe : Fichier config Yaml
+
+Si jamais vous avez l'erreur 
+
+```terminate called after throwing an instance of 'ros::InvalidNameException'
+  what():  Character [-] at element [9] is not valid in Graph Resource Name [/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml].  Valid characters are a-z, A-Z, 0-9, / and _.
+Abandon (core dumped)
+```
+
+
+
+Alors il faut déclarer le noeud de cette manière ```ros::NodeHandle nh("~");``` et non ```ros::NodeHandle nh;```
+
+
 # :s A eviter
 
 - Avoir dans 2 packages différents, 2 executables de même nom !!

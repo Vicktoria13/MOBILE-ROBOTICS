@@ -39,13 +39,12 @@ cv::Mat from_pgm_to_binary(std::string path){
 }
 
 
-// pour appeler ce noeud avec rosrun, et un fichier yaml en argument avec param_yaml:=config.yaml
-//rosrun path_planning_map offline config_yaml:=src/path_planning_map/config/config.yaml
+
 int main(int argc, char** argv)
 {
     // Initialisation du nœud ROS
-    ros::init(argc, argv, "simple_node");
-    ros::NodeHandle nh("~"); 
+    ros::init(argc, argv, "Path Planning");
+    ros::NodeHandle nh("~");
 
 
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <!-- Lancer l'équivalent de ==  rosrun path_planning_map offline _param_file:=/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml-->
+   <node pkg="path_planning_map" type="offline" name="Dijstra_test" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
+
+    <!-- Lancer l'équivalent de ==  rosrun path_planning_map occupancy_grid_loader _param_file:=/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml-->
+
+    <node pkg="path_planning_map" type="occupancy_grid_loader" name="publish_loaded_map" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find path_planning_map)/config/rviz/path_map_visu.rviz"/>
+
+
+
+</launch>
