@@ -10,11 +10,10 @@ Dijsktra::Dijsktra(std::vector<Subcell*>* only_free_node_from_grid,int nb_free_c
      */
     ROS_INFO("Initialisation de Dijsktra avec %d noeuds libres", nb_free_cells);
     this->nb_nodes = nb_free_cells;
-
     this->unvisited = only_free_node_from_grid;
-
     this->nb_unvisited_node_left = nb_free_cells;
     this-> nb_visited_node = 0;
+    this->find_path = false;
 }
 
 
@@ -66,6 +65,19 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
      */
     
 
+
+    // cas error ou indice_start ou indice_end n'est pas dans le tableau
+    if (indice_start > this->nb_nodes || indice_end > this->nb_nodes){
+        ROS_ERROR("ERREUR : indice_start ou indice_end n'est pas dans le tableau");
+        exit(0);
+    }
+
+ 
+
+
+
+    ROS_INFO("LANCEMENT DE LA RECHERCHE DU CHEMIN ...");
+
     std::vector<int> path;
     std::vector<Subcell*> subcells_path;
     
@@ -99,11 +111,17 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
         // on set le flag is_visited a true
         this->unvisited->at(indice_minimum_unvisited)->set_is_visited(true);
 
-        
         this->nb_unvisited_node_left--;
         this->nb_visited_node++;
         
    }
+
+   // si aucun chemin trouvé
+   if (this->unvisited->at(indice_end)->get_distance_from_start() == INFINI){
+       ROS_ERROR(" ===================   AUCUN CHEMIN TROUVE  =================== ");
+       exit(0);     
+   }
+   
 
 
     //construction du chemin a partir des ID_PREVIOUS : on commence par le sommet d'arrivee END

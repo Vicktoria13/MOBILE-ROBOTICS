@@ -1,5 +1,5 @@
 
-# Robotique Mobile : Path Planning et Map Building
+# :robot:Robotique Mobile : Path Planning et Map Building
 
 
 | **Test passed**                                              |
@@ -14,14 +14,14 @@ Robotique Mobile, Path Planning, ROS, C++
 
 
 
-### Objectif du projet :
+### :star: Objectif du projet :
 
 - Exploration cartographique à l'aide du robot Pionneer avec un joystick.
 - Implémenter un retour autonome à la base de chargement en utilisant la planification de trajectoire.
 
 L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d'un LIDAR et d'encodeurs.
 
-### Quelques commandes
+### :gear: Quelques commandes
 
 | commande|A faire depuis| tâche|
 | :---: | :---: | :---: |
@@ -34,9 +34,11 @@ L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d
 | ```rostopic hz /map``` | | Pour connaitre la fréquence de publication|
 | ``` killall gzserver ``` | | Pour fermer toute instance de gazebo|
 | ``` rosrun map_server map_saver --occ 90 --free 10 -f map_rob_mob map:=/map ``` | | Pour enregistrerla map.pgm dans le chemin de map:=""|
+| ``` rosrun rqt_tf_tree rqt_tf_tree ``` | | Visualiser les frames et leurs relations|
+| ``` rosrun tf tf_echo <source_frame> <target_frame> [echo_rate] ``` | | Visualiser la transformation entre 2 frames|
 
 
-### Comment lancer la simulation :
+### :robot: Comment lancer la simulation :
 ```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
 
 **Pour lancer le noeud Dijsktra**
@@ -49,7 +51,7 @@ Exemple :
 
 ```rosrun path_planning_map offline _param_file:=/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml```
 
-## 1) Path Planning :  Discretiser l'occupancy grid
+##:computer: 1) Path Planning :  Discretiser l'occupancy grid
 
 
 Pour la discrétisation, nous divisons la grille d'occupation en grilles de taille PAS pixels. Si un pixel est noir (=obstacle), la cellule entière est considérée comme un obstacle.
@@ -103,7 +105,7 @@ On implémente le pseudo code ci-dessous
 
 
 
-### Annexe : Ecrire un launch file
+### :hammer: Annexe : Ecrire un launch file
 
 ```
 <?xml version="1.0" ?>
@@ -122,7 +124,7 @@ Ce code signifie que l'on lance le noeud :
 - avec l'option ```output="screen"``` pour afficher les messages dans le terminal
 
 
-### Annexe : ajout d'open CV dans le package
+###:hammer: Annexe : ajout d'open CV dans le package
 
 But : on rajoute un noeud qui permet de lire les messages du topic ```/map``` de type ```nav_msgs/OccupancyGrid```. On affcihe la map dans une fenetre type opencv.
 
@@ -144,7 +146,7 @@ __Installation d'opencv__
 
 
 
-### Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
+### :hammer: Annexe : COMMENT LANCER CHAQUE NOEUD/ FONCTION
 
 
 
@@ -170,7 +172,7 @@ Remarque : pour éviter de ralentir l'ordi, dans le fichier :
 
 
 
-# Annexe : COMMENT LANCER rviz depuis un launch avec une config particulière
+## :hammer: Annexe : COMMENT LANCER rviz depuis un launch avec une config particulière
 
 Le but est de pouvoir lancer rviz via le launch file, une fois tous les autres noeuds lancés. On voudrait que l'affichage rviz s'ouvre en affichant les topics qui nous interessent, __sans que l'on ait à cliquer et tout ouvrir par nous-même__
 
@@ -183,18 +185,24 @@ Le but est de pouvoir lancer rviz via le launch file, une fois tous les autres n
 - Dans le launch, ecrire :  ```  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find NOM_PAQUET)/config/rviz/pionner_visu.rviz"/>```
 
 
-# Annexe : construire un CMAKE avec sa propre librairie
+## :hammer: Annexe : construire un CMAKE avec sa propre librairie
 
 - Il faut ajouter la macro ```${PROJECT_NAME} ``` Dans le target link pour inclure les bibliothèques spécifiques à votre projet dans la liste des bibliothèques à lier. 
 
 ```target_link_libraries(map_process_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})```
 
 
-# Annexe : UML Objet Oriented Programming
+## :hammer: Annexe : UML Objet Oriented Programming
 
 <center><img src="images/Code/RobMob.png" width="400" height="400"></center>
 
-# A EVITER
+## :hammer: Annexe : les TF
+
+Quelques méthodes pour écrire les transformations entre les frames
+
+![Alt text](images/tf/tf.png)
+
+# :s A eviter
 
 - Avoir dans 2 packages différents, 2 executables de même nom !!
 

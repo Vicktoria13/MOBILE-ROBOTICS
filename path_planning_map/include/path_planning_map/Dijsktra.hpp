@@ -20,6 +20,9 @@ private:
     int nb_unvisited_node_left;
     int nb_visited_node;
 
+
+    bool find_path;
+
 public:
     Dijsktra(std::vector<Subcell*>* only_free_node_from_grid,int nb_free_cells);
     ~Dijsktra();

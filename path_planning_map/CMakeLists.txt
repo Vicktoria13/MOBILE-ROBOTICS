@@ -4,6 +4,7 @@ project(path_planning_map)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   cv_bridge
+  map_server
 )
 
 find_package(OpenCV)
@@ -29,7 +30,7 @@ add_library(${PROJECT_NAME}
   src/Dijsktra.cpp
 
 )
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} yaml-cpp
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} yaml-cpp 
 )
 
 install(
@@ -58,3 +59,5 @@ add_executable(map_process_node src/map_process.cpp)
 target_link_libraries(map_process_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
+add_executable(occupancy_grid_loader src/occupancy_grid_loader.cpp)
+target_link_libraries(occupancy_grid_loader ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} )

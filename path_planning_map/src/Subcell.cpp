@@ -255,8 +255,6 @@ bool Subcell::check_neighbour_around_marge(std::vector<std::vector<Subcell>> *fu
 
 void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, int margin){
 
-    ROS_INFO("Ajout des voisins avec une marge aux bords de %d pixels",margin);
-
     int indice_ligne = this->y / this->size;
     int indice_colonne = this->x / this->size;
 

@@ -59,6 +59,10 @@
   <build_depend>yaml-cpp</build_depend>
   <build_export_depend>yaml-cpp</build_export_depend>
   <exec_depend>yaml-cpp</exec_depend>
+
+  <build_depend>map_server</build_depend>
+  <build_export_depend>map_server</build_export_depend>
+  <exec_depend>map_server</exec_depend>
     
 
 

@@ -7,19 +7,19 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <yaml-cpp/yaml.h>
+#include <geometry_msgs/PoseArray.h>
+
 
 #include "path_planning_map/Divide.hpp"
 #include "path_planning_map/Dijsktra.hpp"
 
 using namespace std;
 
-#define NAME_MAP "cleanhouse.pgm"
 
 cv::Mat from_pgm_to_binary(std::string path){
   
     //load the image in grayscale mode
     cv::Mat image = cv::imread(path, cv::IMREAD_GRAYSCALE);
-    ROS_INFO("Image loaded");
     ROS_INFO("Image size: %d x %d", image.rows, image.cols);
 
     cv::Mat image_binary = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
@@ -60,37 +60,30 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    ROS_INFO("Fichier de paramètres : %s", param_file_path.c_str());
    
-
-
 
     YAML::Node config = YAML::LoadFile(param_file_path);
     //on recupere les parametres du yaml
     int pas_divide = config["pas"].as<int>();
     int marge = config["marge"].as<int>();
     std::string folder_where_to_save_im = config["folder_image_saver"].as<std::string>();
-    std::string folder_where_are_maps_pgm = config["folder_where_are_the_pgm_map"].as<std::string>();
+    std::string path_pgm_map = config["map_pgm_path"].as<std::string>();
 
 
+    ROS_INFO("PATH_MAP: %s", path_pgm_map.c_str());
 
-    
-    std::string PATH_MAP = folder_where_are_maps_pgm + NAME_MAP;
-    ROS_INFO("PATH_MAP: %s", PATH_MAP.c_str());
-
-    std::string extension_path = PATH_MAP;
+    std::string extension_path = path_pgm_map;
     std::string extension = extension_path.substr(extension_path.size()-3,extension_path.size());
-    ROS_INFO("Extension: %s", extension.c_str());
 
     cv::Mat image;
 
     if (extension == "pgm"){
         ROS_INFO("PGM");
-        image = from_pgm_to_binary(PATH_MAP);
+        image = from_pgm_to_binary(path_pgm_map);
     }
     else{
         ROS_INFO("PNG");
-        image = cv::imread(PATH_MAP, cv::IMREAD_GRAYSCALE);
+        ROS_ERROR("Extension non supportée");
     }
 
     // Vérifier si l'image est chargée avec succès
@@ -101,7 +94,7 @@ int main(int argc, char** argv)
 
     
 
-    Divide div = Divide(image,18);
+    Divide div = Divide(image,pas_divide);
 
     // Necessaire si jamais valeurs incohérentes en entrée / systeme différent
     //div.get_rid_inconsitencies();
@@ -125,35 +118,71 @@ int main(int argc, char** argv)
     //Dijsktra::Dijsktra(std::vector<Subcell*>* only_free_node_from_grid,int nb_free_cells){
     std::vector<Subcell*> tableau_pointurs_free_nodes = div.get_subcells_free();
 
-    Dijsktra dij = Dijsktra(&tableau_pointurs_free_nodes, div.get_nb_free_nodes());
+    int nb_free_nodes = div.get_nb_free_nodes();
+    Dijsktra dij = Dijsktra(&tableau_pointurs_free_nodes, nb_free_nodes);
 
     //on recupere les coordonnees de depart et d'arrivee
     //Subcell* start = div.get_one_subcell_free_with_index(3);
     //Subcell* end = div.get_one_subcell_free_with_index(5);
     
-    std::vector<int> path = dij.launch_dijsktra(3,1230);
+
+    //on recupere le nombre de free nodes
+    
+    std::vector<int> path = dij.launch_dijsktra(3,nb_free_nodes-150);
 
 
     ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
     div.display_subcell_state(path, folder_where_to_save_im);
     
 
+    std::vector<std::vector<int>> coordonnees_consignes = std::vector<std::vector<int>>();
     
     for (Subcell* ptr_sub : dij.get_sub_path()){
         float x = (ptr_sub->get_x()*0.05 - 20.0);
         float y = (ptr_sub->get_y()*0.05 - 20.0);
-        ROS_INFO("(X,Y) : (%f,%f) ", x,y);
+        
+        //on l'ajoute dans le tableau
+        std::vector<int> coord = std::vector<int>();
+        coord.push_back(x);
+        coord.push_back(y);
+        coordonnees_consignes.push_back(coord);
     }
+
+    geometry_msgs::PoseArray trajectory;
+
+    for (std::vector<int> coord : coordonnees_consignes){
+        geometry_msgs::Pose pose;
+        pose.position.x = coord[0];
+        pose.position.y = coord[1];
+        pose.position.z = 0.0;
+
+        pose.orientation.x = 0.0;
+        pose.orientation.y = 0.0;
+        pose.orientation.z = 0.0;
+        pose.orientation.w = 1.0;
+
+
+        trajectory.poses.push_back(pose);
+    }
+
+    trajectory.header.frame_id = "map";
+    trajectory.header.stamp = ros::Time::now();
+
+
+
 
 
     /************************** PUBLICATION ***************************/
 
-    ros::Publisher image_pub = nh.advertise<sensor_msgs::Image>("/image_topic", 1);
+    ros::Publisher trajectory_pub = nh.advertise<geometry_msgs::PoseArray>("/trajectory", 1);
 
     ros::Rate rate(1);  // Fréquence de publication (1 Hz, par exemple)
 
     while (ros::ok()) {
         // Afficher l'image
+
+        trajectory_pub.publish(trajectory);
+        /*
         cv::imshow("Image chargée", image);
         cv::waitKey(1);  // Attendre un court instant pour permettre l'affichage
 
@@ -161,13 +190,15 @@ int main(int argc, char** argv)
         sensor_msgs::ImagePtr image_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
 
         image_pub.publish(image_msg);
-        ROS_INFO("Image publiée sur le topic /image_topic");
+        */
+        ROS_INFO("Path publie sur le topic /trajectory");
 
+        
         // Attendre que le message soit publié avant de passer à la prochaine itération
         ros::spinOnce();
-
-        // Attendre pour maintenir la fréquence spécifiée
         rate.sleep();
+
+        
     }
 
     return 0;

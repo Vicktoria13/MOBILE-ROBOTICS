@@ -3,6 +3,6 @@ marge: 3
 
 
 folder_image_saver: "/home/spi-2019/robmob_ws/src/path_planning_map/images_map/"
-folder_where_are_the_pgm_map: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/"
+map_pgm_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/buvette.pgm"
 
 
