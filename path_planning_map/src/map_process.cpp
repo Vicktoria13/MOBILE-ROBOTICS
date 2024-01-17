@@ -1,4 +1,3 @@
-#include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/GetMap.h>
@@ -72,11 +71,9 @@ public:
 
         ROS_INFO("Image origin in real world : x : %f, y : %f", origin_image_real_world_x,origin_image_real_world_y);
 
-
-
         for (int r = W_MIN; r < W_MAX; r++) {
             for (int c = H_MIN; c < H_MAX; c++) {
-                int8_t map_value = map_msg.data[r * map_msg.info.width + c];
+                int8_t map_value = map_msg.data[(W_MAX+W_MIN-r) * map_msg.info.width + c];
 
                 //map_value est une probabilité entre 0 et 100, -1 si inconnu
                 if (map_value == -1) {
@@ -116,7 +113,7 @@ public:
             cv::waitKey(30);
 
             //save in grayscale
-            cv::imwrite("/home/spi-2019/robmob_ws/src/path_planning_map/images_map/map_.png", map_image);
+            cv::imwrite("/home/portable014/ros_ws/src/path_planning_map/images_map/map_.png", map_image);
 
             // TRAITEMENT DE LA MAP
             Divide div = Divide(map_image, 10);

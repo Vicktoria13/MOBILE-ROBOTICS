@@ -21,22 +21,6 @@ Robotique Mobile, Path Planning, ROS, C++
 
 L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d'un LIDAR et d'encodeurs.
 
-### :gear: Quelques commandes
-
-| commande|A faire depuis| tâche|
-| :---: | :---: | :---: |
-| ```catkin_make ``` |``` ~/robmob_ws``` | Pour compiler|
-| ```source devel/setup.bash``` |``` ~/robmob_ws``` | Pour sourcer|
-| ```source ~/robmob_ws/devel/setup.bash``` |``` gedit ~/.bashrc``` | depuis bash|
-| ```catkin_create_pkg my_teleop rospy roscpp sensor_msgs geometry_msgs``` |``` ~/robmob_ws/src``` | Creer un package avec les dependences|
-| ```catkin_init_workspace``` |``` ~/robmob_ws/src``` | Intit |
-| ```rospack find name_package``` |``` ``` | Pour localiser un package ROS|
-| ```rostopic hz /map``` | | Pour connaitre la fréquence de publication|
-| ``` killall gzserver ``` | | Pour fermer toute instance de gazebo|
-| ``` rosrun map_server map_saver --occ 90 --free 10 -f map_rob_mob map:=/map ``` | | Pour enregistrerla map.pgm dans le chemin de map:=""|
-| ``` rosrun rqt_tf_tree rqt_tf_tree ``` | | Visualiser les frames et leurs relations|
-| ``` rosrun tf tf_echo <source_frame> <target_frame> [echo_rate] ``` | | Visualiser la transformation entre 2 frames|
-
 
 ### :robot: Comment lancer la simulation :
 ```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
@@ -89,6 +73,29 @@ On implémente le pseudo code ci-dessous
 Ici, on a un chemin en pixels, et on veut le convertir en coordonnées dans le referentiel monde. Pour cela, on utilise l'information ```origin``` donné par le fichier ```yaml``` fourni par ```map saver```. 
 
 ![Alt text](images/coordinate/convert_traj.png)
+
+
+
+
+
+
+### :gear: Quelques commandes
+
+| commande|A faire depuis| tâche|
+| :---: | :---: | :---: |
+| ```catkin_make ``` |``` ~/robmob_ws``` | Pour compiler|
+| ```source devel/setup.bash``` |``` ~/robmob_ws``` | Pour sourcer|
+| ```source ~/robmob_ws/devel/setup.bash``` |``` gedit ~/.bashrc``` | depuis bash|
+| ```catkin_create_pkg my_teleop rospy roscpp sensor_msgs geometry_msgs``` |``` ~/robmob_ws/src``` | Creer un package avec les dependences|
+| ```catkin_init_workspace``` |``` ~/robmob_ws/src``` | Intit |
+| ```rospack find name_package``` |``` ``` | Pour localiser un package ROS|
+| ```rostopic hz /map``` | | Pour connaitre la fréquence de publication|
+| ``` killall gzserver ``` | | Pour fermer toute instance de gazebo|
+| ``` rosrun map_server map_saver --occ 90 --free 10 -f map_rob_mob map:=/map ``` | | Pour enregistrerla map.pgm dans le chemin de map:=""|
+| ``` rosrun rqt_tf_tree rqt_tf_tree ``` | | Visualiser les frames et leurs relations|
+| ``` rosrun tf tf_echo <source_frame> <target_frame> [echo_rate] ``` | | Visualiser la transformation entre 2 frames|
+
+
 
 
 
@@ -222,6 +229,8 @@ Abandon (core dumped)
 
 
 Alors il faut déclarer le noeud de cette manière ```ros::NodeHandle nh("~");``` et non ```ros::NodeHandle nh;```
+
+
 
 
 # :s A eviter
