@@ -15,10 +15,20 @@
    <include file="$(find my_teleop)/launch/command_joystick.launch" if="$(arg teleop)"/> -->
 
    <!-- Lancer l'équivalent de rosrun path_planning_map map_process_node -->
-   <node pkg="path_planning_map" type="map_process_node" name="map_processing" output="screen"/>
+   <!-- <node pkg="path_planning_map" type="map_process_node" name="map_processing" output="screen"/>-->
 
    <!--
    <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/> -->
+
+   <node pkg="path_planning_map" type="offline" name="Dijstra_test" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
+
+    <!-- Lancer l'équivalent de ==  rosrun path_planning_map occupancy_grid_loader _param_file:=/home/spi-2019/robmob_ws/src/path_planning_map/config/config.yaml-->
+
+    <node pkg="path_planning_map" type="occupancy_grid_loader" name="publish_loaded_map" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
 
 
 </launch>

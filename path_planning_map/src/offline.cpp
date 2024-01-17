@@ -23,8 +23,6 @@ cv::Mat from_pgm_to_binary(std::string path){
   
     //load the image in grayscale mode
     cv::Mat image = cv::imread(path, cv::IMREAD_GRAYSCALE);
-    ROS_INFO("Image size: %d x %d", image.rows, image.cols);
-
     cv::Mat image_binary = cv::Mat::zeros(image.rows, image.cols, CV_8UC1);
 
     for (int i = 0; i < image.rows; i++){
@@ -50,10 +48,8 @@ int main(int argc, char** argv)
     ros::NodeHandle nh("~");
 
 
-    // YAML
+    /**************************** YAML ******************************/
     std::string param_file_path ;
-
-    
     
     // Récupérer le paramètre spécifié lors du lancement du nœud
     nh.getParam("param_file", param_file_path);
@@ -64,18 +60,14 @@ int main(int argc, char** argv)
     }
 
     
-
-   
-
     YAML::Node config = YAML::LoadFile(param_file_path);
-    //on recupere les parametres du yaml
+
     int pas_divide = config["pas"].as<int>();
     int marge = config["marge"].as<int>();
     std::string folder_where_to_save_im = config["folder_image_saver"].as<std::string>();
     std::string path_pgm_map = config["map_pgm_path"].as<std::string>();
     std::string path_yaml_map = config["map_yaml_path"].as<std::string>();
 
-    ROS_INFO("PATH_MAP: %s", path_pgm_map.c_str());
 
     std::string extension_path = path_pgm_map;
     std::string extension = extension_path.substr(extension_path.size()-3,extension_path.size());
@@ -87,11 +79,9 @@ int main(int argc, char** argv)
         image = from_pgm_to_binary(path_pgm_map);
     }
     else{
-        ROS_INFO("PNG");
         ROS_ERROR("Extension non supportée");
     }
 
-    // Vérifier si l'image est chargée avec succès
     if (image.empty()) {
         ROS_ERROR("Impossible de charger l'image.");
         return -1;
@@ -120,20 +110,13 @@ int main(int argc, char** argv)
     /* =================================== FOR DEBUG  ===================================*/
 
     //////////////// DIJKSTRA ///////////////////////
-    //Dijsktra::Dijsktra(std::vector<Subcell*>* only_free_node_from_grid,int nb_free_cells){
     std::vector<Subcell*> tableau_pointurs_free_nodes = div.get_subcells_free();
 
     int nb_free_nodes = div.get_nb_free_nodes();
     Dijsktra dij = Dijsktra(&tableau_pointurs_free_nodes, nb_free_nodes);
 
-    //on recupere les coordonnees de depart et d'arrivee
-    //Subcell* start = div.get_one_subcell_free_with_index(3);
-    //Subcell* end = div.get_one_subcell_free_with_index(5);
     
-
-    //on recupere le nombre de free nodes
-    
-    std::vector<int> path = dij.launch_dijsktra(3,nb_free_nodes-150);
+    std::vector<int> path = dij.launch_dijsktra(3,nb_free_nodes-1);
 
 
     ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
@@ -143,7 +126,18 @@ int main(int argc, char** argv)
     // on charge les parametres de path_yaml_map
     double resolution;
     double* origin = new double[3];
-    
+
+    YAML::Node config_map = YAML::LoadFile(path_yaml_map);
+    resolution = config_map["resolution"].as<double>();
+    origin[0] = config_map["origin"][0].as<double>();
+    origin[1] = config_map["origin"][1].as<double>();
+    origin[2] = config_map["origin"][2].as<double>();
+
+    ROS_INFO("================== INFO PARAMETRES MAP ========================");
+    ROS_INFO("Resolution: %f", resolution);
+    ROS_INFO("Origin: %f, %f, %f", origin[0], origin[1], origin[2]);
+    ROS_INFO("================================================================");
+
 
 
 
@@ -155,24 +149,14 @@ int main(int argc, char** argv)
     //alors que le centre de la map est donné par la pos du robot
     // et on sait ou est le pixel en bas a gauche de la map (-100,-100) dans le referentiel de la map
 
-    //donc on en deduit les coordonnées du chemin dans le repère map
-    
-    /*
-    float x_bas_gauche = -100 +0 + sub_bas_gauche->get_x()*0.05;
-    float y_bas_gauche = -100 + pixel_hauteur*0.05 - sub_bas_gauche->get_y()*0.05;
-
-    */
 
     geometry_msgs::PoseArray trajectory;
 
    
     for (Subcell* ptr_sub : dij.get_sub_path()){
-        float x = -100 + 0 + (ptr_sub->get_x()*0.05);
-        float y = -100 + div.get_rows()*0.05 - (ptr_sub->get_y()*0.05);
+        float x = origin[0] + 0 + (ptr_sub->get_x()*resolution);
+        float y = origin[1] + div.get_rows()*resolution - (ptr_sub->get_y()*resolution);
         
-
-
-        // on remplit trajectory
         geometry_msgs::Pose pose;
         pose.position.x = x;
         pose.position.y = y;
@@ -191,11 +175,6 @@ int main(int argc, char** argv)
 
     trajectory.header.frame_id = "map";
     trajectory.header.stamp = ros::Time::now();
-
-    ROS_INFO("Nombre de points dans la trajectoire: %d", trajectory.poses.size());
-
-
-
 
 
     /************************** PUBLICATION ***************************/

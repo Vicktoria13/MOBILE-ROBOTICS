@@ -2,7 +2,7 @@
 # :robot:Robotique Mobile : Path Planning et Map Building
 
 
-| **Test passed**                                              |
+| **Developpé sur**                                              |
 | ------------------------------------------------------------ |
 |![ROS-Noetic](https://img.shields.io/badge/ROS-Noetic-red.svg) ![Ubuntu-20.04](https://img.shields.io/badge/Ubuntu-20.04-blue.svg)
 
@@ -68,7 +68,7 @@ __Resultats__
 
 
 
-## 2) Dijsktra
+## :mechanical_leg: 2) Dijsktra
 
 On implémente le pseudo code ci-dessous
 
@@ -82,6 +82,13 @@ On implémente le pseudo code ci-dessous
 
 
 <img src="images/path_env.png" width="650" height="300"> 
+
+
+## :mechanical_leg: 3) D'un chemin en pixels à un chemin en coordonnées dans le referentiel monde
+
+Ici, on a un chemin en pixels, et on veut le convertir en coordonnées dans le referentiel monde. Pour cela, on utilise l'information ```origin``` donné par le fichier ```yaml``` fourni par ```map saver```. 
+
+![Alt text](images/coordinate/convert_traj.png)
 
 
 
