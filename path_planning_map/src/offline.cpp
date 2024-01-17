@@ -13,6 +13,9 @@
 #include "path_planning_map/Divide.hpp"
 #include "path_planning_map/Dijsktra.hpp"
 
+#include "path_planning_map/occupancy_grid_loader.hpp"
+
+
 using namespace std;
 
 
@@ -43,14 +46,15 @@ cv::Mat from_pgm_to_binary(std::string path){
 int main(int argc, char** argv)
 {
     // Initialisation du nœud ROS
-    ros::init(argc, argv, "Path Planning");
+    ros::init(argc, argv, "PathPlanning");
     ros::NodeHandle nh("~");
 
 
-
     // YAML
-    std::string param_file_path;
+    std::string param_file_path ;
 
+    
+    
     // Récupérer le paramètre spécifié lors du lancement du nœud
     nh.getParam("param_file", param_file_path);
     
@@ -58,6 +62,8 @@ int main(int argc, char** argv)
         ROS_ERROR("Aucun fichier de paramètres spécifié.");
         return -1;
     }
+
+    
 
    
 
@@ -67,7 +73,7 @@ int main(int argc, char** argv)
     int marge = config["marge"].as<int>();
     std::string folder_where_to_save_im = config["folder_image_saver"].as<std::string>();
     std::string path_pgm_map = config["map_pgm_path"].as<std::string>();
-
+    std::string path_yaml_map = config["map_yaml_path"].as<std::string>();
 
     ROS_INFO("PATH_MAP: %s", path_pgm_map.c_str());
 
@@ -132,40 +138,61 @@ int main(int argc, char** argv)
 
     ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
     div.display_subcell_state(path, folder_where_to_save_im);
+    ROS_INFO("===================> SAVING DONE  ");
+
+    // on charge les parametres de path_yaml_map
+    double resolution;
+    double* origin = new double[3];
     
 
-    std::vector<std::vector<int>> coordonnees_consignes = std::vector<std::vector<int>>();
+
+
     
-    for (Subcell* ptr_sub : dij.get_sub_path()){
-        float x = (ptr_sub->get_x()*0.05 - 20.0);
-        float y = (ptr_sub->get_y()*0.05 - 20.0);
-        
-        //on l'ajoute dans le tableau
-        std::vector<int> coord = std::vector<int>();
-        coord.push_back(x);
-        coord.push_back(y);
-        coordonnees_consignes.push_back(coord);
-    }
+
+    std::vector<std::vector<float>> coordonnees_consignes = std::vector<std::vector<float>>();
+    
+    // sachant que les coordonnées renvoyée par get_x et get_y sont pixel, le (0,0) est en haut a gauche
+    //alors que le centre de la map est donné par la pos du robot
+    // et on sait ou est le pixel en bas a gauche de la map (-100,-100) dans le referentiel de la map
+
+    //donc on en deduit les coordonnées du chemin dans le repère map
+    
+    /*
+    float x_bas_gauche = -100 +0 + sub_bas_gauche->get_x()*0.05;
+    float y_bas_gauche = -100 + pixel_hauteur*0.05 - sub_bas_gauche->get_y()*0.05;
+
+    */
 
     geometry_msgs::PoseArray trajectory;
 
-    for (std::vector<int> coord : coordonnees_consignes){
+   
+    for (Subcell* ptr_sub : dij.get_sub_path()){
+        float x = -100 + 0 + (ptr_sub->get_x()*0.05);
+        float y = -100 + div.get_rows()*0.05 - (ptr_sub->get_y()*0.05);
+        
+
+
+        // on remplit trajectory
         geometry_msgs::Pose pose;
-        pose.position.x = coord[0];
-        pose.position.y = coord[1];
+        pose.position.x = x;
+        pose.position.y = y;
         pose.position.z = 0.0;
 
         pose.orientation.x = 0.0;
         pose.orientation.y = 0.0;
         pose.orientation.z = 0.0;
-        pose.orientation.w = 1.0;
-
+        pose.orientation.w = 0.0;
 
         trajectory.poses.push_back(pose);
+        
     }
+
+    
 
     trajectory.header.frame_id = "map";
     trajectory.header.stamp = ros::Time::now();
+
+    ROS_INFO("Nombre de points dans la trajectoire: %d", trajectory.poses.size());
 
 
 
@@ -177,23 +204,11 @@ int main(int argc, char** argv)
 
     ros::Rate rate(1);  // Fréquence de publication (1 Hz, par exemple)
 
+    ROS_INFO("PUBLICATION DE LA TRAJECTOIRE ...");
     while (ros::ok()) {
         // Afficher l'image
 
         trajectory_pub.publish(trajectory);
-        /*
-        cv::imshow("Image chargée", image);
-        cv::waitKey(1);  // Attendre un court instant pour permettre l'affichage
-
-        // Créer un message Image ROS
-        sensor_msgs::ImagePtr image_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
-
-        image_pub.publish(image_msg);
-        */
-        ROS_INFO("Path publie sur le topic /trajectory");
-
-        
-        // Attendre que le message soit publié avant de passer à la prochaine itération
         ros::spinOnce();
         rate.sleep();
 

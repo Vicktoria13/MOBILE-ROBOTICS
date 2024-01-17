@@ -17,7 +17,7 @@ private:
     bool is_visited;
 
     int size;
-    //position du coin haut gaucheis_visited
+
     int x;
     int y;
 

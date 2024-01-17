@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
 
     read_yaml_param(path_yaml_map, &resolution, origin, &free_thresh, &occupied_thresh);
     
+    // on creer un noeud suscriber pour recuperer la pos du robot   
+
 
     // Charger l'image PGM via path et map_server
     nav_msgs::GetMap::Response map_msg;
@@ -49,7 +51,11 @@ int main(int argc, char** argv) {
     char* path = new char[path_pgm_map.length() + 1];
     strcpy(path, path_pgm_map.c_str());
 
-    map_server::loadMapFromFile(&map_msg, path, resolution, false, free_thresh, occupied_thresh, origin);
+    // on normalise les valeurs entre 0 et 1
+
+    map_server::loadMapFromFile(&map_msg, path, resolution, false, free_thresh, occupied_thresh, origin, MapMode::TRINARY);
+    ROS_INFO(" Si p(x)<%f, alors p(x)=0", free_thresh);
+    ROS_INFO(" Si p(x)>%f, alors p(x)=1", occupied_thresh);
 
     // Créer un publisher pour publier la carte
     ros::Publisher map_pub = nh.advertise<nav_msgs::OccupancyGrid>("map", 1, true);

@@ -1,6 +1,6 @@
-pas: 18
+pas: 3
 marge: 3
 folder_image_saver: "/home/spi-2019/robmob_ws/src/path_planning_map/images_map/"
-map_pgm_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/cleanhouse.pgm"
-map_yaml_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/cleanhouse.yaml"
+map_pgm_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/map_rob_mob.pgm"
+map_yaml_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/map_rob_mob.yaml"
 

@@ -78,6 +78,10 @@ class Divide{
         }
 
 
+        Subcell* get_one_subcell_with_index(int index_row, int index_col){
+            return &this->subcells[index_row][index_col];
+        }
+
 
 
 

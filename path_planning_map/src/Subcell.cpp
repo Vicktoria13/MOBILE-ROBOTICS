@@ -18,9 +18,11 @@ Subcell::Subcell(bool is_occupied, int size, int x, int y,int id){
     this->is_occupied = is_occupied;
     this->size = size;
 
-    // coordonnees du coin haut gauche en pixels
+    // coordonnees du coin haut gauche en pixels dans l'occupancy grid, avec (0,0 étant le coin haut gauche de l'occupancy grid)
     this->x = x;
     this->y = y;
+
+    
     this->is_visited = false; // par defaut, on considere que la subcell n'est pas visitee
 
     // liste des voisins adjacents : 4 au maximum !! 

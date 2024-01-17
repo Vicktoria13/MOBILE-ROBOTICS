@@ -12,7 +12,7 @@
       <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
     </node>
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find path_planning_map)/config/rviz/path_map_visu.rviz"/>
+    <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find path_planning_map)/config/rviz/path_map_visu.rviz"/> -->
 
 
 
