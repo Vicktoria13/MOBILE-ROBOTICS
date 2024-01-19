@@ -9,6 +9,8 @@
 #include <yaml-cpp/yaml.h>
 #include <geometry_msgs/PoseArray.h>
 
+#include "nav_msgs/Path.h"
+
 
 #include "path_planning_map/Divide.hpp"
 #include "path_planning_map/Dijsktra.hpp"
@@ -143,43 +145,37 @@ int main(int argc, char** argv)
 
     
 
-    std::vector<std::vector<float>> coordonnees_consignes = std::vector<std::vector<float>>();
-    
-    // sachant que les coordonnées renvoyée par get_x et get_y sont pixel, le (0,0) est en haut a gauche
-    //alors que le centre de la map est donné par la pos du robot
-    // et on sait ou est le pixel en bas a gauche de la map (-100,-100) dans le referentiel de la map
+    //message de type path
+    nav_msgs::Path path_msg;
+    path_msg.header.frame_id = "map";
+    path_msg.header.stamp = ros::Time::now();
 
-
-    geometry_msgs::PoseArray trajectory;
-
-   
+    // on repmpli le message path
     for (Subcell* ptr_sub : dij.get_sub_path()){
+        geometry_msgs::PoseStamped pose;
+
         float x = origin[0] + 0 + (ptr_sub->get_x()*resolution);
         float y = origin[1] + div.get_rows()*resolution - (ptr_sub->get_y()*resolution);
-        
-        geometry_msgs::Pose pose;
-        pose.position.x = x;
-        pose.position.y = y;
-        pose.position.z = 0.0;
 
-        pose.orientation.x = 0.0;
-        pose.orientation.y = 0.0;
-        pose.orientation.z = 0.0;
-        pose.orientation.w = 0.0;
+        pose.pose.position.x = x;
+        pose.pose.position.y = y;
+        pose.pose.position.z = 0.0;
 
-        trajectory.poses.push_back(pose);
-        
+        pose.pose.orientation.x = 0.0;
+        pose.pose.orientation.y = 0.0;
+        pose.pose.orientation.z = 0.0;
+        pose.pose.orientation.w = 0.0;
+
+        path_msg.poses.push_back(pose);
     }
 
-    
 
-    trajectory.header.frame_id = "map";
-    trajectory.header.stamp = ros::Time::now();
 
 
     /************************** PUBLICATION ***************************/
 
-    ros::Publisher trajectory_pub = nh.advertise<geometry_msgs::PoseArray>("/trajectory", 1);
+    ros::Publisher path_pub = nh.advertise<nav_msgs::Path>("/trajectory", 1);
+
 
     ros::Rate rate(1);  // Fréquence de publication (1 Hz, par exemple)
 
@@ -187,7 +183,7 @@ int main(int argc, char** argv)
     while (ros::ok()) {
         // Afficher l'image
 
-        trajectory_pub.publish(trajectory);
+        path_pub.publish(path_msg);
         ros::spinOnce();
         rate.sleep();
 
