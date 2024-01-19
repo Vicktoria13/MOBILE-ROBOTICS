@@ -64,6 +64,8 @@ class Divide{
 
     
 
+        void convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells);
+        
 
         // getters
         std::vector<std::vector<Subcell>> get_subcells();
@@ -90,7 +92,6 @@ class Divide{
 
         int get_rows();
         int get_cols();
-
         int get_nb_rows_discrete();
         int get_nb_cols_discrete();
 

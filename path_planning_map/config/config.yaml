@@ -1,4 +1,4 @@
-pas: 8
+pas: 10
 marge: 3
 folder_image_saver: "/home/spi-2019/robmob_ws/src/path_planning_map/images_map/"
 map_pgm_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/map_rob_mob.pgm"

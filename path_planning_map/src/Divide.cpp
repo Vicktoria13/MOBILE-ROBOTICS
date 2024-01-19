@@ -253,8 +253,6 @@ void Divide::display_subcells(std::string path_folder){
     
 
     // on enregistre
-
-    
     cv::imwrite(path_folder+"occupancy_grid_discretized.png", map_2_images);
     cv::imwrite(path_folder + "map_discrete.png", map_free_subcells);
     cv::imwrite(path_folder+"compare.png", map_image_concat);
@@ -265,6 +263,17 @@ void Divide::display_subcells(std::string path_folder){
 }
 
 
+
+void Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells){
+    /**
+     * @brief Etant donné le tableau de subcells 2d, convertis les coordonnées en mètres en coordonnées en subcells libres
+     * 
+     */
+
+    *x_subcells = (int) (x_meters / pas);
+    *y_subcells = (int) (y_meters / pas);
+
+}
 
 
 void Divide::display_subcell_state(std::vector<int> path, std::string path_folder){
