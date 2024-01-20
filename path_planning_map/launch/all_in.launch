@@ -20,7 +20,15 @@
    <!--
    <node pkg="my_teleop" type="teleop_keyboard.py" name="teleop_clavier" output="screen"/> -->
 
-   <node pkg="path_planning_map" type="offline" name="Dijstra_test" output="screen">
+
+   <!-- SERVICE POUR LIRE POSITION DU ROBOT SUR UN TOPIC DONNE -->
+
+   <!-- Lancer l'équivalent de  rosrun path_planning_map getPosition_server -->
+   <node pkg="path_planning_map" type="getPosition_server" name="getPosition_server" output="screen"> </node>
+
+
+   <!-- Fais appel au service + lit un PGM et publie dans /trajectory -->
+   <node pkg="path_planning_map" type="launch_path_planning" name="Dijstra_test" output="screen">
       <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
     </node>
 

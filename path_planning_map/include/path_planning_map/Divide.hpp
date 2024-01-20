@@ -36,6 +36,8 @@ class Divide{
 
         int nb_free_nodes;
 
+        
+
     public :
 
         // constructeur

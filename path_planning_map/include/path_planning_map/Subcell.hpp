@@ -40,6 +40,7 @@ private:
     int id_previous;
 
 
+
 public:
 
     Subcell(bool is_occupied, int size, int x, int y,int id);

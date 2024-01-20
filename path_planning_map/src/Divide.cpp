@@ -362,7 +362,8 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
         
         cv::rectangle(test_convert, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
 
-        cv::imwrite("test.png", test_convert);
+        cv::imwrite("/home/spi-2019/test.png", test_convert);
+        ROS_INFO("image enregistrée dans /home/spi-2019/test.png");
     
 
     }

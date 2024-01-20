@@ -19,7 +19,12 @@ Robotique Mobile, Path Planning, ROS, C++
 - Exploration cartographique à l'aide du robot Pionneer avec un joystick.
 - Implémenter un retour autonome à la base de chargement en utilisant la planification de trajectoire.
 
-L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d'un LIDAR et d'encodeurs.
+L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d'un LIDAR et d'encodeurs. Le robot est un __Pioneer 3DX.__
+
+<center>
+<img src="images/vrai_photo/minilab.jpg" width="200" height="270"> 
+<legend>Robot utilise</legend>
+</center>
 
 
 ### :robot: Comment lancer la simulation :
@@ -42,11 +47,6 @@ Pour la discrétisation, nous divisons la grille d'occupation en grilles de tail
 
 __Resultats__
 
-
-
-
-
-<img src="images/grid/occupancy_grid_discretized.png" width="500" height="250"> 
 
 <img src="images/grid/comparison.png" width="600" height="200"> 
 
@@ -76,7 +76,12 @@ Ici, on a un chemin en pixels, et on veut le convertir en coordonnées dans le r
 
 
 
+## :mechanical_arm: 3) Creation d'un service pour connaitre la position du robot et convertion en grille
 
+Il a fallu recuperer la position du robot au début : on crée un service qui permet de connaitre la position du robot dans le referentiel monde. On a donc la position du robot dans le referentiel monde, et on la convertit en coordonnées dans le referentiel grille. De la, on lance l'algorithme de Dijkstra.
+
+
+<img src="images/coordinate/traj_from_robot.png" width="950" height="300"> 
 
 
 ### :gear: Quelques commandes

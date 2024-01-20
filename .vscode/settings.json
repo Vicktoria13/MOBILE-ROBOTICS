@@ -1,3 +1,19 @@
 {
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "python.autoComplete.extraPaths": [
+        "/home/spi-2019/catkin_ws/install/roslaunch_stager/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_constants/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_actions/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_services/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/spi-2019/catkin_ws/install/roslaunch_stager/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_constants/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/mb_actions/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_services/lib/python3/dist-packages",
+        "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
 }
