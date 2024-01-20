@@ -171,7 +171,7 @@ int main(int argc, char** argv)
     std::vector<int> path = dij.launch_dijsktra(id_start,nb_free_nodes-345);
 
 
-    ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ...");
+    ROS_INFO("Enregistrement du trace chemin dans un fichier PNG ..");
     div.display_subcell_state(path, folder_where_to_save_im);
 
 
