@@ -264,17 +264,119 @@ void Divide::display_subcells(std::string path_folder){
 
 
 
-void Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells){
+int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells, float resolution, double* origin_coin_bas_gauche,bool debug_draw){
     /**
      * @brief Etant donné le tableau de subcells 2d, convertis les coordonnées en mètres en coordonnées en subcells libres
      * 
-     */
+     * @param x_meters : coordonnée en x en metres dans le repere map
+     * @param y_meters : coordonnée en y en metres dans le repere map
+     * @param x_subcells : colonne de la subcell libre dans le tableau 2D de subcells
+     * @param y_subcells : ligne de la subcell libre dans le tableau 2D de subcells
+     * @param resolution : resolution de la map
+    * @param origin_coin_bas_gauche : coordonnées du coin bas gauche de la map dans le repere map donné par YML
+    * @param debug_draw : si true, on dessine les coordonnées du point dans l'image
+    * 
+    * @return 1 si tout s'est bien passé, -1 si la subcell est un mur
+    */
 
-    *x_subcells = (int) (x_meters / pas);
-    *y_subcells = (int) (y_meters / pas);
+    // etape 1 : on cherche les coordonnées du points dans le repère image
+    // OT = OA + MA  + MT avec O (coin haut gauche de l'image) et M (centre du repere map) et T coordonnées du point dans le repere map
+    // A point bas gauche de l'image
+
+    double* OA = new double[2]; // OA vaut normalement (0, -200)
+    OA[1] = -this->rows*resolution;
+    OA[0] = 0;
+    
+    
+    double* AM = new double[2]; // AM vaut normalement (100, 100 )
+    AM[0] = - origin_coin_bas_gauche[0];
+    AM[1] = - origin_coin_bas_gauche[1];
+
+    
+    double* MT = new double[2]; // MT vaut (x_meters, y_meters)
+    MT[0] = x_meters;
+    MT[1] = y_meters;
+
+    double* OT = new double[2];
+    OT[0] = OA[0] + AM[0] + MT[0];
+    OT[1] = OA[1] + AM[1] + MT[1];
+
+    // OT represente donc les coordonnées en meters du points recherchés dans le referentiel map, O etant le coin haut gauche de l'image
+
+    //matrice de rotation autour de l'axe x de 90°
+    // | 1  0 |
+    // | 0 -1 |
+
+    //on applique la rotation a OT
+    double* OT_rotated = new double[2];
+    OT_rotated[0] = OT[0];
+    OT_rotated[1] = -OT[1];
+
+
+    // ici, on a les coordonnées en pixels du point dans le repere image
+    *x_subcells = OT_rotated[0] / resolution;
+    *y_subcells = OT_rotated[1] / resolution;
+
+    if (debug_draw){
+        ROS_INFO("pixel_line : %d, pixel_col : %d", *y_subcells, *x_subcells);
+    }
+
+
+    // on divise par le pas pour avoir les coordonnées en subcells
+    *x_subcells = *x_subcells / this->pas;
+    *y_subcells = *y_subcells / this->pas;
+
+
+    if (debug_draw){
+        ROS_INFO("ligne : %d, colonne : %d", *y_subcells, *x_subcells);
+    }
+    
+
+
+    // on verifie que les coordonnées sont bien dans le tableau
+    if (*x_subcells > this->nb_cols_discrete || *y_subcells > this->nb_rows_discrete){
+        ROS_ERROR("ERREUR : les coordonnées sont en dehors du tableau");
+        exit(0);
+    }
+
+
+    if (debug_draw){
+      
+    
+        cv::Mat test_convert = map_image_original.clone();
+        cv::cvtColor(test_convert, test_convert, cv::COLOR_GRAY2RGB);
+
+        test_convert = filter_free_subcells();
+
+        
+        Subcell* subcell = &(subcells[*y_subcells][*x_subcells]);
+        int x = subcell->get_x();
+        int y = subcell->get_y();
+        int size = subcell->get_size();
+        cv::rectangle(test_convert, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(255, 0, 255), -1);
+
+        // on trace les coordonnées en metres du point x_meters, y_meters
+        cv::Point point(OT_rotated[0]/resolution, OT_rotated[1]/resolution);
+        
+        test_convert.at<cv::Vec3b>(point) = cv::Vec3b(255, 255, 255);
+        
+        cv::rectangle(test_convert, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
+
+        cv::imwrite("test.png", test_convert);
+    
+
+    }
+
+    // on regarde l'etat de la subcell : mur ou libre
+    if (subcells[*y_subcells][*x_subcells].get_is_occupied()){
+        ROS_WARN(" ===== ATTENTION : la subcell est un mur =====  ");
+        return -1;
+    }
+
+    return 1;
+
 
 }
-
 
 void Divide::display_subcell_state(std::vector<int> path, std::string path_folder){
     /**

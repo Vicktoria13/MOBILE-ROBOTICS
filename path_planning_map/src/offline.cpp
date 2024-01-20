@@ -139,47 +139,11 @@ int main(int argc, char** argv)
     ROS_INFO("================================================================");
     
 
-    // Subcell bas_droite coordonness
-    double coordonnes_subcell_haut_droite[2];
-    Subcell *haut_droite = div.get_one_subcell_with_index(0,div.get_nb_cols_discrete()-1);
+    // TEST
 
-    coordonnes_subcell_haut_droite[0] = origin[0] + 0 + (haut_droite->get_x()*resolution);
-    coordonnes_subcell_haut_droite[1] = origin[1] + div.get_rows()*resolution - (haut_droite->get_y()*resolution);
-
-    ROS_INFO("coordonnes_subcell_haut_droite: %f, %f", coordonnes_subcell_haut_droite[0], coordonnes_subcell_haut_droite[1]);
-
-    // test debug
-    // subcell en bas a gauche
-    int nb_lignes_subcells = div.get_nb_rows_discrete();
-    int nb_colonnes_subcells = div.get_nb_cols_discrete();
-
-    ROS_INFO("nb_lignes_subcells: %d", nb_lignes_subcells);
-    ROS_INFO("nb_colonnes_subcells: %d", nb_colonnes_subcells);
-    
-    Subcell* bas_gauche = div.get_one_subcell_with_index(nb_lignes_subcells-1,0);
-
-    float x_meters;
-    float y_meters;
-
-    x_meters = origin[0] + 0 + (bas_gauche->get_x()*resolution);
-    y_meters = origin[1] + div.get_rows()*resolution - (bas_gauche->get_y()*resolution);
-
-    ROS_INFO("aFFIChage de la subcell[%d][%d]", nb_lignes_subcells-1,0);
-    ROS_INFO("x_meters: %f", x_meters);
-    ROS_INFO("y_meters: %f", y_meters);
-
-    // on fait l'inverse : étant donné des coordonnées en mètres, on veut les coordonnées en subcells
-    int x_subcells;
-    int y_subcells;
-
-    // sachant que la subcell en bas a gauche a pour coordonnées (origin[0], origin[1])
-
-    x_subcells = (x_meters*nb_lignes_subcells/ origin[0]) - 1;
-    y_subcells = (x_meters*(nb_colonnes_subcells-1)) / 99.5;
-
-    ROS_INFO("x_subcells: %d", x_subcells);
-    ROS_INFO("y_subcells: %d", y_subcells);
-
+    int lignes_subcell;
+    int colonnes_subcell;
+    int a = div.convert_from_meters_to_free_subcells(19.0,-65.5,&lignes_subcell,&colonnes_subcell,resolution,origin,true);
 
 
 

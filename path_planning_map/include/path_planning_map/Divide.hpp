@@ -64,7 +64,7 @@ class Divide{
 
     
 
-        void convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells);
+        int convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells, float resolution, double* origin_coin_bas_gauche,bool debug_draw);
         
 
         // getters
