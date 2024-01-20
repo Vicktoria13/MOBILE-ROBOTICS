@@ -79,10 +79,7 @@ int main(int argc, char **argv){
     ros::AsyncSpinner spinner(0);
     spinner.start();
 
-    // Lecture du point à atteindre
     ros::Subscriber sub1 = n.subscribe("trajectory", 1000, topic_callback);
-    
-    // Lecture position courante
     ros::Subscriber sub2 = n.subscribe("odom", 1000, topic_callback2);
     
     // Calcul de l'erreur

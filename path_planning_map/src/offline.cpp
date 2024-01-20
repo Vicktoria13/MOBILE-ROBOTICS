@@ -143,6 +143,7 @@ int main(int argc, char** argv)
 
     int lignes_subcell;
     int colonnes_subcell;
+    ROS_INFO("TEST CONVERSION");
     int a = div.convert_from_meters_to_free_subcells(19.0,-65.5,&lignes_subcell,&colonnes_subcell,resolution,origin,true);
 
 
