@@ -25,3 +25,6 @@ target_link_libraries(read_traj ${catkin_LIBRARIES})
 
 add_executable(current_traj src/current_traj.cpp)
 target_link_libraries(current_traj ${catkin_LIBRARIES})
+
+add_executable(exploration_autonome src/exploration_autonome.cpp)
+target_link_libraries(exploration_autonome ${catkin_LIBRARIES})
