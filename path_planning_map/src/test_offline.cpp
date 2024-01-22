@@ -40,6 +40,25 @@ cv::Mat from_pgm_to_binary(std::string path){
 }
 
 
+cv::Mat from_occupancy_grid_to_binary(nav_msgs::OccupancyGrid map_msg){
+  
+    //load the image in grayscale mode
+    cv::Mat image = cv::Mat::zeros(map_msg.info.height, map_msg.info.width, CV_8UC1);
+
+    for (int i = 0; i < map_msg.info.height; i++){
+        for (int j = 0; j < map_msg.info.width; j++){
+
+            if (map_msg.data[i*map_msg.info.width + j] > 50){
+                image.at<uchar>(i,j) = 255;
+            }
+            else{
+                image.at<uchar>(i,j) = 0;
+            }
+        }
+    }
+    return image;
+}
+
 
 int main(int argc, char** argv)
 {

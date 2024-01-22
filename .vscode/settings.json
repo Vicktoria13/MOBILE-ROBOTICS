@@ -15,5 +15,11 @@
         "/home/spi-2019/catkin_ws/install/dji_services/lib/python3/dist-packages",
         "/home/spi-2019/catkin_ws/install/dji_msgs/lib/python3/dist-packages",
         "/opt/ros/noetic/lib/python3/dist-packages"
-    ]
+    ],
+    "files.associations": {
+        "memory": "cpp",
+        "shared_mutex": "cpp",
+        "memory_resource": "cpp",
+        "condition_variable": "cpp"
+    }
 }
