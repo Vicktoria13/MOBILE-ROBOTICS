@@ -1,6 +1,6 @@
 pas: 3
 marge: 5
-folder_image_saver: "/home/spi-2019/robmob_ws/src/path_planning_map/images_map/"
-map_pgm_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/salle.pgm"
-map_yaml_path: "/home/spi-2019/robmob_ws/src/minilab_simulation/map/salle.yaml"
+folder_image_saver: "/home/victoria/robmob_ws/src/path_planning_map/images_map/"
+map_pgm_path: "/home/victoria/robmob_ws/src/minilab_simulation/map/map_rob_mob.pgm"
+map_yaml_path: "/home/victoria/robmob_ws/src/minilab_simulation/map/map_rob_mob.yaml"
 
