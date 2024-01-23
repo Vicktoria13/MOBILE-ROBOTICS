@@ -11,6 +11,7 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
+#include <math.h>
 
 
 
@@ -29,12 +30,20 @@ class MapGenerator
     MapGenerator(const std::string& mapname, int threshold_occupied, int threshold_free)
       : mapname_(mapname), saved_map_(false), threshold_occupied_(threshold_occupied), threshold_free_(threshold_free)
     {
+
+      
+
       ros::NodeHandle n;
       ROS_INFO("Waiting for the map");
+
+    
       map_sub_ = n.subscribe("map", 1, &MapGenerator::mapCallback, this);
       odom_subscriber = n.subscribe("odom", 1, &MapGenerator::odomCallback, this);
       cmd_vel_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     
+      do_a_360_tour();
+      
+
     }
 
 
@@ -47,19 +56,50 @@ class MapGenerator
         pos_y_metres = odom_msg->pose.pose.position.y;
         pos_theta_radians = tf::getYaw(odom_msg->pose.pose.orientation);
 
+
         publishCommand();
     }
 
     // Fonction pour publier une commande de vitesse
     void publishCommand()
     {
-        geometry_msgs::Twist cmd_vel_msg;
 
-        cmd_vel_msg.linear.x = 0.2;
-        cmd_vel_msg.angular.z = 0.1;
+      geometry_msgs::Twist cmd_vel_msg;
+      cmd_vel_msg.angular.z = 0.5;
 
-        //cmd_vel_publisher.publish(cmd_vel_msg);
+
+
     }
+
+    void do_a_360_tour(){
+
+      // d'abord on avance un peu
+
+      geometry_msgs::Twist cmd_vel_msg;
+      //on veut avance de 0.1 m
+      float distance_to_go = 0.25;
+      float distance_done = 0.0;
+      for ( distance_done = 0.0; distance_done <= distance_to_go; distance_done += 0.01) {
+        cmd_vel_msg.linear.x = 0.1;
+        cmd_vel_publisher.publish(cmd_vel_msg);
+        ros::Duration(0.1).sleep();
+      }
+
+      cmd_vel_msg.linear.x = 0.0;
+      cmd_vel_publisher.publish(cmd_vel_msg);
+      
+
+      //puis on tourne sur nous meme
+
+      for (double angle = 0.0; angle <= 4*M_PI; angle += 0.1) {
+        cmd_vel_msg.angular.z = 0.5;
+        cmd_vel_publisher.publish(cmd_vel_msg);
+        ros::Duration(0.1).sleep();
+      }
+
+      cmd_vel_msg.angular.z = 0.0;
+      cmd_vel_publisher.publish(cmd_vel_msg);
+      }
 
 
 
@@ -102,12 +142,15 @@ class MapGenerator
       Divide div = Divide(image_map, 3);
       div.divide_map_for_exploring();
 
+
       // conversion
       int x_subcells;
       int y_subcells;
       ROS_INFO("resolution = %f",resolution);
       int a = div.convert_from_meters_to_free_subcells(pos_x_in_map,pos_y_in_map,&x_subcells,&y_subcells,resolution,origin,false,true);
-      ROS_INFO("x_subcells = %d, y_subcells = %d",x_subcells,y_subcells);
+
+      //on met la subcell a free
+
       div.display_exploration("/home/victoria/robmob_ws/src/autonomous_explore/map/", x_subcells, y_subcells);
     
     }

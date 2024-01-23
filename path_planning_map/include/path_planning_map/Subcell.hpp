@@ -64,6 +64,9 @@ public:
     void set_distance_from_start(int distance);
     void set_is_visited(bool is_visited);
     void set_id_previous(int id_previous);
+    void set_is_occupied(bool is_occupied){
+        this->is_occupied = is_occupied;
+    }
 
     
 

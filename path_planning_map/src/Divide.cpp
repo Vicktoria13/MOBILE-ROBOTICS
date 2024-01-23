@@ -235,9 +235,7 @@ void Divide::display_exploration(std::string path_folder, int id_ligne_rob, int 
     int size = subcells[id_ligne_rob][id_colonne_rob].get_size();
 
     cv::rectangle(map_free_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 0, 255), -1); //rouge
-
-    cv::rectangle(map_free_subcells, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
-
+    cv::rectangle(map_free_subcells, cv::Point(x, y), cv::Point(x+size, y+size), cv::Scalar(0, 255, 0), 1); //vert
   
     cv::imwrite(path_folder+"exploration_grid.png", map_free_subcells);
 
@@ -385,23 +383,19 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
     double* OA = new double[2]; // OA vaut normalement (0, -200)
     OA[1] = -this->rows*resolution;
     OA[0] = 0;
-    ROS_INFO("OA : %f, %f", OA[0], OA[1]);
     
     double* AM = new double[2]; // AM vaut normalement (100, 100 )
     AM[0] = - origin_coin_bas_gauche[0];
     AM[1] = - origin_coin_bas_gauche[1];
-    ROS_INFO("AM : %f, %f", AM[0], AM[1]);
 
     
     double* MT = new double[2]; // MT vaut (x_meters, y_meters)
     MT[0] = x_meters;
     MT[1] = y_meters;
-    ROS_INFO("MT : %f, %f", MT[0], MT[1]);
 
     double* OT = new double[2];
     OT[0] = OA[0] + AM[0] + MT[0];
     OT[1] = OA[1] + AM[1] + MT[1];
-    ROS_INFO("OT : %f, %f", OT[0], OT[1]);
 
     // OT represente donc les coordonnées en meters du points recherchés dans le referentiel map, O etant le coin haut gauche de l'image
 
@@ -413,7 +407,6 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
     double* OT_rotated = new double[2];
     OT_rotated[0] = OT[0];
     OT_rotated[1] = -OT[1];
-    ROS_INFO("OT_rotated : %f, %f", OT_rotated[0], OT_rotated[1]);
 
 
     // ici, on a les coordonnées en pixels du point dans le repere image
@@ -474,8 +467,16 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
 
     // on regarde l'etat de la subcell : mur ou libre
     if (subcells[*y_subcells][*x_subcells].get_is_occupied()){
-        ROS_WARN(" ===== ATTENTION : la subcell est un mur =====  ");
-        return -1;
+        if (for_explore){
+            ROS_INFO("pour explore, on la met a libre");
+            subcells[*y_subcells][*x_subcells].set_is_occupied(false);
+
+        }
+
+        else{
+            ROS_WARN(" ===== ATTENTION : la subcell est un mur =====  ");
+            return -1;
+        }
     }
 
     return 1;
