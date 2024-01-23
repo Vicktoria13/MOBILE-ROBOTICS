@@ -12,6 +12,7 @@
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
 #include <math.h>
+#include "autonomous_explore/UnicycleAutonome.hpp"
 
 
 
@@ -42,7 +43,6 @@ class MapGenerator
       cmd_vel_publisher = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     
       do_a_360_tour();
-      
 
     }
 
@@ -50,15 +50,17 @@ class MapGenerator
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr &odom_msg)
     {
-     
-        //on enregistre la position du robot
-        pos_x_metres = odom_msg->pose.pose.position.x;
-        pos_y_metres = odom_msg->pose.pose.position.y;
-        pos_theta_radians = tf::getYaw(odom_msg->pose.pose.orientation);
+        
+        this->pos_x_metres = odom_msg->pose.pose.position.x;
+        this->pos_y_metres = odom_msg->pose.pose.position.y;
+        this->pos_theta_radians = tf::getYaw(odom_msg->pose.pose.orientation);
 
-
+        this->robot.update_pose_robot(pos_x_metres,pos_y_metres,pos_theta_radians);
+        display_information_about_robot();
         publishCommand();
     }
+
+
 
     // Fonction pour publier une commande de vitesse
     void publishCommand()
@@ -133,7 +135,6 @@ class MapGenerator
       this->origin[2] = 0.0;
 
       build_grid_from_pgm(pos_x_metres, pos_y_metres, pos_theta_radians);
-      ROS_INFO("Done\n");
     }
 
 
@@ -146,13 +147,19 @@ class MapGenerator
       // conversion
       int x_subcells;
       int y_subcells;
-      ROS_INFO("resolution = %f",resolution);
       int a = div.convert_from_meters_to_free_subcells(pos_x_in_map,pos_y_in_map,&x_subcells,&y_subcells,resolution,origin,false,true);
 
-      //on met la subcell a free
-
       div.display_exploration("/home/victoria/robmob_ws/src/autonomous_explore/map/", x_subcells, y_subcells);
+
+      std::vector<std::vector<Subcell>> subcells = div.get_subcells();
+      this->robot.update_map(&subcells);
     
+    }
+
+
+    void display_information_about_robot(){
+
+      ROS_INFO("Pose du robot : x = %f, y = %f, theta = %f",this->robot.get_current_pose_x_meters(),this->robot.get_current_pose_y_meters(),this->robot.get_current_pose_theta_radians());
     }
 
 
@@ -179,6 +186,9 @@ class MapGenerator
     double* origin = new double[3];
 
 
+    //robot
+    UnicycleAutonome robot = UnicycleAutonome();
+
 
 };
 
@@ -193,6 +203,8 @@ int main(int argc, char** argv)
 
 
   MapGenerator mg(mapname, threshold_occupied, threshold_free);
+
+  
 
   while(!mg.saved_map_ && ros::ok())
     ros::spin();
