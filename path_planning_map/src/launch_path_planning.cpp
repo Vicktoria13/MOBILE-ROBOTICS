@@ -151,7 +151,7 @@ int main(int argc, char** argv)
     /** Convertir en subcell **/
     int lignes_subcell;
     int colonnes_subcell;
-    int a = div.convert_from_meters_to_free_subcells(x_metres,y_metres,&lignes_subcell,&colonnes_subcell,resolution,origin,true);
+    int a = div.convert_from_meters_to_free_subcells(x_metres,y_metres,&lignes_subcell,&colonnes_subcell,resolution,origin,true,false);
     
     if (a == -1){
         ROS_ERROR("SUR UN MUR");

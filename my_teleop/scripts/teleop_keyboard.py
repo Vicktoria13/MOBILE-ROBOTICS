@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import getch
 import rospy
 from geometry_msgs.msg import Twist

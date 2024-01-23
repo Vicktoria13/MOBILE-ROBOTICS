@@ -105,20 +105,14 @@ public:
         ROS_INFO("Timer callback");
         nav_msgs::GetMap dynamic_map_srv;
         if (dynamic_map_client_.call(dynamic_map_srv)) {
-            ROS_INFO("Received updated map from dynamic_map service");
 
-            //on affiche charge une image png
+            // on lance map saver 
+            /*
             cv::Mat map_image = occupancy_to_cvmatrix(dynamic_map_srv.response.map);
             cv::imshow("Map", map_image);
             cv::waitKey(30);
-
-            //save in grayscale
             cv::imwrite("/home/portable014/ros_ws/src/path_planning_map/images_map/map_.png", map_image);
-
-            // TRAITEMENT DE LA MAP
-            Divide div = Divide(map_image, 10);
-            //print dimensions
-            ROS_INFO("rows: %d", div.get_rows());
+            */
 
         } else {
             ROS_ERROR("Failed to call dynamic_map service");

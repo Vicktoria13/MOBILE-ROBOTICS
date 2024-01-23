@@ -48,12 +48,15 @@ class Divide{
 
         // une methode pour permettre de diviser la map en plusieurs parties
         int divide_map(int marge_for_voisins);
+        void divide_map_for_exploring();
+
 
         bool detect_subcells(cv::Mat sous_rectangle);
 
         //display
 
         void display_subcells(std::string path_folder);
+        void display_exploration(std::string path_folder,int id_ligne_rob, int id_colonne_rob);
 
         //for debug
         void get_rid_inconsitencies();
@@ -66,7 +69,7 @@ class Divide{
 
     
 
-        int convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells, float resolution, double* origin_coin_bas_gauche,bool debug_draw);
+        int convert_from_meters_to_free_subcells(float x_meters, float y_meters, int* x_subcells, int* y_subcells, float resolution, double* origin_coin_bas_gauche,bool debug_draw,bool for_explore);
         
 
         // getters

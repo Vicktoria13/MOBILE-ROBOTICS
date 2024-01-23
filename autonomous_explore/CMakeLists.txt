@@ -35,3 +35,7 @@ include_directories(
 
 add_executable(explore src/explore.cpp)
 target_link_libraries(explore ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+
+add_executable(save_map_in_pgm src/save_map_in_pgm.cpp)
+target_link_libraries(save_map_in_pgm ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

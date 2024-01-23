@@ -4,6 +4,8 @@
 #include <std_srvs/Empty.h>
 #include <nav_msgs/Odometry.h>
 #include <opencv2/highgui/highgui.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <tf/tf.h>
 
 class CommandPublisher
 {
@@ -17,16 +19,9 @@ public:
         cmd_vel_publisher = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     }
 
-    void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr &map_msg)
+    void mapCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg)
     {
       
-
-        // save the map in pgm format using map_saver
-        std::string map_saver_command = "rosrun map_server map_saver -f " + save_path;
-        system(map_saver_command.c_str());
-
-
-        ROS_INFO("Map saved ");
 
 
         
@@ -36,6 +31,11 @@ public:
     void odomCallback(const nav_msgs::Odometry::ConstPtr &odom_msg)
     {
      
+        //on enregistre la position du robot
+        pos_x_metres = odom_msg->pose.pose.position.x;
+        pos_y_metres = odom_msg->pose.pose.position.y;
+        pos_theta_radians = tf::getYaw(odom_msg->pose.pose.orientation);
+
         publishCommand();
     }
 
@@ -61,6 +61,11 @@ private:
     ros::Subscriber odom_subscriber;
     ros::Publisher cmd_vel_publisher;
     std::string save_path;
+
+    float pos_x_metres;
+    float pos_y_metres;
+    float pos_theta_radians;
+
 };
 
 int main(int argc, char **argv)
