@@ -76,12 +76,17 @@ Ici, on a un chemin en pixels, et on veut le convertir en coordonnées dans le r
 
 
 
-## :mechanical_arm: 3) Creation d'un service pour connaitre la position du robot et convertion en grille
+## :mechanical_arm: 4) Creation d'un service pour connaitre la position du robot et convertion en grille
 
 Il a fallu recuperer la position du robot au début : on crée un service qui permet de connaitre la position du robot dans le referentiel monde. On a donc la position du robot dans le referentiel monde, et on la convertit en coordonnées dans le referentiel grille. De la, on lance l'algorithme de Dijkstra.
 
 
 <img src="images/coordinate/traj_from_robot.png" width="950" height="300"> 
+
+
+## :mechanical_arm: 5) Choisir via Rviz la position du point d'arrivée
+
+<img src="images/animated/chose_path.gif" width="450" height="300"> 
 
 
 ### :gear: Quelques commandes
