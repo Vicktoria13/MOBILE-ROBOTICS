@@ -48,8 +48,8 @@ public:
         cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
         // GAINS
-        k1=0.2;
-        k2=0.8;
+        k1=0.05;
+        k2=0.02;
 
     }
 
@@ -97,6 +97,9 @@ public:
             float u1, u2;
             u1 = cos(theta_curr_) * v1_ + sin(theta_curr_) * v2_;
             u2 = (-sin(theta_curr_) / l1) * v1_ + (cos(theta_curr_) / l1) * v2_;
+
+            ROS_INFO("u1 = %f m/s", u1);
+            ROS_INFO("u2 = %f rad/s", u2);
 
 
 

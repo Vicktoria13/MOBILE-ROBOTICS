@@ -61,3 +61,6 @@ target_link_libraries(save_map_in_pgm ${PROJECT_NAME} ${catkin_LIBRARIES} ${Open
 
 
 
+
+add_executable(cmd_auto src/cmd_auto.cpp)
+target_link_libraries(cmd_auto ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
