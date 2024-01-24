@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<launch>
+   <!-- Lancer l'équivalent de roslaunch minilab_simulation minilab_simulation.launch-->
+   <include file="$(find minilab_simulation)/launch/minilab_simulation.launch" >
+      <arg name="map" value="buvette" />
+   </include>
+
+   <!-- Lancer l'équivalent de rosrun gmapping slam_gmapping-->
+   <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen"/>
+
+   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find path_planning_map)/config/rviz/pionner_visu.rviz"/>
+
+    <!-- Lancer l'équivalent de rosrun path_planning_map occupancy_grid_loader _param_file:=/home/victoria/robmob_ws/src/path_planning_map/config/config.yaml-->
+    <node pkg="path_planning_map" type="occupancy_grid_loader" name="occupancy_grid_loader" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
+
+
+   <!-- Lancer l'équivalent de rosrun path_tracking current_traj pour les TF -->
+    <node pkg="path_tracking" type="current_traj" name="current_traj" output="screen"/>
+
+    <!-- Lancer l'équivalent de rosrun path_planning_map getPosition_server -->
+    <node pkg="path_planning_map" type="getPosition_server" name="getPosition_server" output="screen"> </node>
+   
+
+    <!-- rosrun path_planning_map launch_Dijstra_callback _param_file:=/home/victoria/robmob_ws/src/path_planning_map/config/config.yaml-->
+    <node pkg="path_planning_map" type="launch_Dijstra_callback" name="Dijstra_test" output="screen">
+      <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
+    </node>
+
+
+</launch>

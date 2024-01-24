@@ -8,6 +8,14 @@
 #include <tf/transform_listener.h>
 #include <nav_msgs/Path.h>
 
+/**
+ * @brief Code permettant de lire les tf et publier directement la position du robot dans la map dans un topic dédié 
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "tf_listener_node");
     ros::NodeHandle nh;
@@ -34,8 +42,8 @@ int main(int argc, char** argv) {
         try {
             // Essayer de trouver la transformation entre /map et /base_link
             //wait for transform to be available
-            tf.waitForTransform("odom", "base_footprint", ros::Time(0), ros::Duration(3.0));
-            tf.lookupTransform("odom", "base_footprint", ros::Time(0), transform);
+            tf.waitForTransform("map", "base_link", ros::Time(0), ros::Duration(3.0));
+            tf.lookupTransform("map", "base_link", ros::Time(0), transform);
 
         } catch (tf2::TransformException& ex) {
             ROS_WARN("%s", ex.what());
@@ -80,7 +88,6 @@ int main(int argc, char** argv) {
         traj_msg.poses.push_back(pose);
         
 
-        ROS_INFO("il y a %d poses dans le message", traj_msg.poses.size());
 
         // Publier le message
         traj_pub.publish(traj_msg);

@@ -40,6 +40,7 @@ class Divide{
 
     public :
 
+        Divide(){};
         // constructeur
         Divide(cv::Mat map_image_original, int pas);
         

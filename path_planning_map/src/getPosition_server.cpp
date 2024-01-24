@@ -9,7 +9,7 @@ bool getUnicyclePosCallback(path_planning_map::getUnicyclePos::Request& req,
                              path_planning_map::getUnicyclePos::Response& res)
 {
     // Lire la dernière position du robot depuis le topic /odom
-    nav_msgs::Odometry::ConstPtr odom_msg = ros::topic::waitForMessage<nav_msgs::Odometry>("/odom", ros::Duration(1.0));
+    nav_msgs::Odometry::ConstPtr odom_msg = ros::topic::waitForMessage<nav_msgs::Odometry>("/pose_unicycle", ros::Duration(1.0));
 
     if (odom_msg)
     {
@@ -21,6 +21,7 @@ bool getUnicyclePosCallback(path_planning_map::getUnicyclePos::Request& req,
         ROS_ERROR("Aucun message reçu sur le topic /odom.");
         return false;
     }
+    
 }
 
 int main(int argc, char** argv)

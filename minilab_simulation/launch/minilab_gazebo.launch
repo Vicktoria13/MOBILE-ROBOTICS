@@ -13,7 +13,7 @@
 	</include>
 
 	
-  	<node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf  -x 0.0 -y 0 -z 0.05 -Y 1.57 -model minilab_equiped" />
+  	<node name="spawn_robot" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf  -x 0.0 -y -3 -z 0.05 -Y 1.57 -model minilab_equiped" />
 	<!--node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model pr2" /-->
 
 	<include file="$(find minilab_simulation)/launch/$(arg map_name).launch" />	

@@ -136,7 +136,7 @@ int main(int argc, char** argv)
     path_planning_map::getUnicyclePos srv;
 
 
-    int x_metres, y_metres;
+    float x_metres, y_metres;
     if (client.call(srv)) {
         nav_msgs::Odometry unicycle_position = srv.response.unicycle_position;
         x_metres = unicycle_position.pose.pose.position.x;

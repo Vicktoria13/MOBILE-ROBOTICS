@@ -28,7 +28,7 @@
 
 
    <!-- Fais appel au service + lit un PGM et publie dans /trajectory -->
-   <node pkg="path_planning_map" type="launch_path_planning" name="Dijstra_test" output="screen">
+   <node pkg="path_planning_map" type="launch_Dijstra_callback" name="Dijstra_test" output="screen">
       <param name="param_file" value="$(find path_planning_map)/config/config.yaml"/>
     </node>
 

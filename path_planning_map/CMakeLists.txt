@@ -79,6 +79,9 @@ install(
 add_executable(launch_path_planning src/launch_path_planning.cpp)
 target_link_libraries(launch_path_planning ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} )
 
+add_executable(launch_Dijstra_callback src/launch_Dijstra_callback.cpp)
+target_link_libraries(launch_Dijstra_callback ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} )
+
 
 add_executable(test_offline src/test_offline.cpp)
 target_link_libraries(test_offline ${PROJECT_NAME} ${catkin_LIBRARIES} ${OpenCV_LIBS} )

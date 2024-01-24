@@ -380,22 +380,33 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
     // OT = OA + MA  + MT avec O (coin haut gauche de l'image) et M (centre du repere map) et T coordonnées du point dans le repere map
     // A point bas gauche de l'image
 
+    ROS_INFO("====================================================");
+    ROS_INFO("x_meters : %f, y_meters : %f", x_meters, y_meters);
+    ROS_INFO("resolution : %f", resolution);
+    ROS_INFO("origin_coin_bas_gauche : %f, %f", origin_coin_bas_gauche[0], origin_coin_bas_gauche[1]);
+    ROS_INFO("nb pixels : %d, %d", this->cols, this->rows);
+
     double* OA = new double[2]; // OA vaut normalement (0, -200)
     OA[1] = -this->rows*resolution;
     OA[0] = 0;
+    ROS_INFO("OA : %f, %f", OA[0], OA[1]);
     
     double* AM = new double[2]; // AM vaut normalement (100, 100 )
     AM[0] = - origin_coin_bas_gauche[0];
     AM[1] = - origin_coin_bas_gauche[1];
+    ROS_INFO("AM : %f, %f", AM[0], AM[1]);
 
     
     double* MT = new double[2]; // MT vaut (x_meters, y_meters)
     MT[0] = x_meters;
     MT[1] = y_meters;
+    ROS_INFO("MT : %f, %f", MT[0], MT[1]);
+
 
     double* OT = new double[2];
     OT[0] = OA[0] + AM[0] + MT[0];
     OT[1] = OA[1] + AM[1] + MT[1];
+    ROS_INFO("OT : %f, %f", OT[0], OT[1]);
 
     // OT represente donc les coordonnées en meters du points recherchés dans le referentiel map, O etant le coin haut gauche de l'image
 
@@ -407,11 +418,12 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
     double* OT_rotated = new double[2];
     OT_rotated[0] = OT[0];
     OT_rotated[1] = -OT[1];
+    ROS_INFO("OT_rotated : %f, %f", OT_rotated[0], OT_rotated[1]);
 
 
     // ici, on a les coordonnées en pixels du point dans le repere image
-    *x_subcells = OT_rotated[0] / resolution;
-    *y_subcells = OT_rotated[1] / resolution;
+    *x_subcells = OT_rotated[0] / resolution; // colonne
+    *y_subcells = OT_rotated[1] / resolution; //ligne
 
 
 
@@ -420,9 +432,10 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
 
 
     // on divise par le pas pour avoir les coordonnées en subcells
-    *x_subcells = *x_subcells / this->pas;
-    *y_subcells = *y_subcells / this->pas;
+    *x_subcells = *x_subcells / this->pas; // colonne
+    *y_subcells = *y_subcells / this->pas; //ligne
 
+    ROS_INFO("====================================================");
 
     if (debug_draw){
         ROS_INFO("ligne : %d, colonne : %d", *y_subcells, *x_subcells);
@@ -459,7 +472,7 @@ int Divide::convert_from_meters_to_free_subcells(float x_meters, float y_meters,
         
         cv::rectangle(test_convert, cv::Point(0, 0), cv::Point(cols, rows), cv::Scalar(0, 255, 0), 1); //vert
 
-        cv::imwrite("/home/spi-2019/test.png", test_convert);
+        cv::imwrite("/home/victoria/test.png", test_convert);
         ROS_INFO("image enregistrée dans /home/spi-2019/test.png");
     
 
