@@ -9,6 +9,7 @@ Panels:
         - /Axes1
         - /TF1/Frames1
         - /Path1
+        - /Map3
       Splitter Ratio: 0.5
     Tree Height: 572
   - Class: rviz/Selection
@@ -332,6 +333,16 @@ Visualization Manager:
       Topic: /pose_unicycle
       Unreliable: false
       Value: false
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /occupancy_grid_loader/map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -376,9 +387,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.9147968888282776
+      Pitch: 0.8047969341278076
       Target Frame: <Fixed Frame>
-      Yaw: 4.868593692779541
+      Yaw: 4.68359375
     Saved: ~
 Window Geometry:
   Displays:
@@ -397,4 +408,4 @@ Window Geometry:
     collapsed: true
   Width: 1712
   X: 106
-  Y: 46
+  Y: 27

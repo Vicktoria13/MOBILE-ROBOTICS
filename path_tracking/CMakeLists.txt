@@ -22,6 +22,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(read_traj src/read_traj.cpp)
 target_link_libraries(read_traj ${catkin_LIBRARIES})
 
+add_executable(read_traj_with_callback src/read_traj_with_callback.cpp)
+target_link_libraries(read_traj_with_callback ${catkin_LIBRARIES})
+
 
 add_executable(current_traj src/current_traj.cpp)
 target_link_libraries(current_traj ${catkin_LIBRARIES})

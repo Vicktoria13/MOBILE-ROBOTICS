@@ -21,6 +21,7 @@
         "shared_mutex": "cpp",
         "memory_resource": "cpp",
         "condition_variable": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cmath": "cpp"
     }
 }
