@@ -77,23 +77,13 @@ void scan_callback(const sensor_msgs::LaserScan::ConstPtr& msg3){
   dist_left_eye = range_max;
   dist_right_eye = range_max;
 
-  // Récupération de l'obstacle le plus lointain
-  //for (size_t i = 0; i < ranges.size(); ++i){
-    //if (ranges[i] >= range_min && ranges[i] <= range_max){
-
-  //obs_angle = angle_min + i*angle_increment;
-  //obs_x = ranges[i] * std::cos(obs_angle);
-  //obs_y = ranges[i] * std::sin(obs_angle);
-
-
-
   // On récupère la distance en face et les distances -45° et +45°
   // On tourne le robot à -45°, +45°, -90° ou + 90°
   dist_ahead = ranges[360];
-  dist_right_eye = ranges[220];
-  dist_left_eye = ranges[500];
-  dist_left = ranges[640];
-  dist_right = ranges[80];
+  dist_right_eye = ranges[220];   // -45°
+  dist_left_eye = ranges[500];    // +45°
+  dist_left = ranges[640];        // -90°
+  dist_right = ranges[80];        // +90°
 
   dist_obstacle = dist_right_eye;
   angle_obstacle = -0.4;
@@ -110,31 +100,13 @@ void scan_callback(const sensor_msgs::LaserScan::ConstPtr& msg3){
     angle_obstacle = -0.8;
   }
 
-   ///}
-  //}
-
-  relative_angle = angle_obstacle - theta_curr;
-
-  if (relative_angle < 0){
-    //ROS_INFO("Obstacle à droite : Angle = %f", angle_obstacle);
-  } else {
-    //ROS_INFO("Obstacle à gauche : Angle = %f", angle_obstacle);
-  }
-
-  //ROS_INFO("distance avec obstacle : %lf",dist_obstacle);
-  //ROS_INFO("distance devant : %lf",dist_ahead);
-  //ROS_INFO("distance gauche : %lf",dist_left_eye);
-  //ROS_INFO("distance droite : %lf",dist_right_eye);
-
-    // ROS_INFO("Obstacle at (x,y) = (%f, %f)", obs_x, obs_y);
- 
-    //ROS_INFO("i : %lf",ranges[i]);
-    //ROS_INFO("increm : %lf",angle_increment); // 0.0056 rad = 0.3°
-    //ROS_INFO("%d",ranges.size());             // 720
-    //ROS_INFO("min : %lf",angle_min);          // -2 rad = -115°
-    //ROS_INFO("max : %lf",angle_max);          //  2 rad = 115°
-    //ROS_INFO("range min : %lf",range_min);    // 0.1 m
-    //ROS_INFO("range max : %lf",range_max);    // 15 m
+  //ROS_INFO("i : %lf",ranges[i]);
+  //ROS_INFO("increm : %lf",angle_increment); // 0.0056 rad = 0.3°
+  //ROS_INFO("%d",ranges.size());             // 720
+  //ROS_INFO("min : %lf",angle_min);          // -2 rad = -115°
+  //ROS_INFO("max : %lf",angle_max);          //  2 rad = 115°
+  //ROS_INFO("range min : %lf",range_min);    // 0.1 m
+  //ROS_INFO("range max : %lf",range_max);    // 15 m
 }
 
 int main(int argc, char **argv){
@@ -163,15 +135,9 @@ int main(int argc, char **argv){
     // sinon on continue tout droit
 
     bool obstacle_detected = false;
-
-    // Vitesse désirée 
-    float u_des = 0.0; // 2 cm/s
     
     // Commande u, omega à envoyer au robot
     float u, omega;
-    u = u_des;
-
-    //ROS_INFO("Obstacle at (x,y) = (%f, %f)", obs_x, obs_y);
 
     // Si pas de mur en face, tout droit
     // Sinon, on se tourne vers l'obstacle le plus lointain
@@ -183,15 +149,6 @@ int main(int argc, char **argv){
 
       omega = angle_obstacle;
       u = 0.0;
-
-      /*
-      if ((relative_angle > 0) && (relative_angle > 1)){
-        ROS_INFO("Obstacle to the right : Angle = %f", relative_angle);
-        omega = 0.7845; // tourner à gauche
-      } else if ((relative_angle < 0) && (relative_angle < -1)){
-        ROS_INFO("Obstacle to the left : Angle = %f", relative_angle);
-        omega = - 0.7845; // tourner à droite
-      }*/
 
     } else {
       obstacle_detected = false;

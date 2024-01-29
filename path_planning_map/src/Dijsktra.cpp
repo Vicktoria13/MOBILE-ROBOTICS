@@ -91,8 +91,8 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
 
    /*********** Etape 2 : on parcourt tous les noeuds *********/
 
+   ROS_INFO("avant le while nb_unvisited_node_left = %d", nb_unvisited_node_left);
    while (nb_unvisited_node_left > 0){
-
         //indice_minimum_unvisited : indice du subcell a distance minimum dans UNVISITED
         int indice_minimum_unvisited = minDistance(); 
         std::vector<Subcell*>* voisins = this->unvisited->at(indice_minimum_unvisited)->get_voisins();
@@ -113,6 +113,8 @@ std::vector<int> Dijsktra::launch_dijsktra(int indice_start, int indice_end){
 
         this->nb_unvisited_node_left--;
         this->nb_visited_node++;
+
+
         
    }
 

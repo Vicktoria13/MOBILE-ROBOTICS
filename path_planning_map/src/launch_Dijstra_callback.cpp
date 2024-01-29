@@ -42,6 +42,9 @@ private:
     double* origin_map = new double[3];
 
 
+    /***************************************************** Paramètres de la nav *****************************************************************************/
+    int pas_;
+    int marge_;
 
 public:
 
@@ -87,6 +90,9 @@ public:
         div.build_graph_free_subcells();
         div.display_subcells(folder_where_to_save_im);
 
+        this->marge_ = marge;
+        this->pas_ = pas_divide;
+
         
 
     }
@@ -103,7 +109,17 @@ public:
          * @param msg : objectif de position GOAL envoyé via Rviz
          */
 
+
+
+        
+
         ROS_INFO(" ======================>  NOUVEL OBJECTIF RECU !");
+
+
+        /*discretisation encore */
+        div = Divide(image_binaire_from_pgm, pas_);
+        div.divide_map(marge_);
+        div.build_graph_free_subcells();
 
         path_planning_map::getUnicyclePos srv;
 
@@ -161,10 +177,15 @@ public:
             path_msg_.poses.clear();
             path_msg_.header.stamp = ros::Time::now();
         
-            for (Subcell* ptr_sub : dij.get_sub_path()) {
+            //for (Subcell* ptr_sub : dij.get_sub_path()) {
+            ROS_INFO("taille : %d",dij.get_sub_path().size());
+
+            std::vector<Subcell*> sub_path = dij.get_sub_path();
+
+            for (int i=sub_path.size()-1; i>=0; i--){
                 geometry_msgs::PoseStamped pose;
-                double x = origin_map[0] + 0 + (ptr_sub->get_x() * resolution_map);
-                double y = origin_map[1] + div.get_rows() * resolution_map - (ptr_sub->get_y() * resolution_map);
+                double x = origin_map[0] + 0 + (sub_path[i]->get_x()* resolution_map);
+                double y = origin_map[1] + div.get_rows() * resolution_map - (sub_path[i]->get_y() * resolution_map);
 
                 pose.pose.position.x = x;
                 pose.pose.position.y = y;
