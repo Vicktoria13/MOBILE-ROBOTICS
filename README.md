@@ -26,6 +26,11 @@ L'implémentation se fait sous __ROS NOETIC__ avec un robot monocycle équipé d
 <legend>Robot utilise</legend>
 </center>
 
+<center>
+<img src="images/animated/follow_path.gif" width="450" height="300"> 
+<legend>Suivi de trajectoire Rviz</legend>
+</center>
+
 
 ### :robot: Comment lancer la simulation :
 ```roslaunch my_map_processing all_in.launch ``` permet de lancer gazebo/map/rviz
@@ -88,6 +93,10 @@ Il a fallu recuperer la position du robot au début : on crée un service qui pe
 
 <img src="images/animated/chose_path.gif" width="450" height="300"> 
 
+
+## :mechanical_arm: 6) Suivre le chemin avec des trajectoires successives
+
+<img src="images/animated/follow_path.gif" width="450" height="300"> 
 
 ### :gear: Quelques commandes
 
