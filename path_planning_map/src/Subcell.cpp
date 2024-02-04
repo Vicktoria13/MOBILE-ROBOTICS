@@ -117,6 +117,8 @@ bool Subcell::check_neighbour_around_marge(std::vector<std::vector<Subcell>> *fu
      * marge pixel vers le bas qui ne sont pas des murs
      * marge pixel vers la droite qui ne sont pas des murs
      * marge pixel vers la gauche qui ne sont pas des murs
+     * margin pixel en diagonale qui ne sont pas des murs
+     * 
      * 
      * si oui, renvoie True et  met distance_detected_from_wall a -1
      * 
@@ -256,6 +258,10 @@ bool Subcell::check_neighbour_around_marge(std::vector<std::vector<Subcell>> *fu
 
 
 void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, int margin){
+    /**
+     * @brief Ajout des voisins adjacents a la subcell
+     * 
+     */
 
     int indice_ligne = this->y / this->size;
     int indice_colonne = this->x / this->size;
@@ -266,11 +272,13 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
     //on regarde le voisin du haut
     if (indice_ligne - 1 >= 0){
         if (not (*full_grid)[indice_ligne - 1][indice_colonne].get_is_occupied()){
+
             this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne]));
             this->nb_voisins_adjacents++;
 
+            //  check_neighbour_around_marge() renvoie True si le cercle de rayon MARGE autour de la subcell est bien libre
             if (not (*full_grid)[indice_ligne - 1][indice_colonne].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -280,6 +288,8 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
 
 
     }
+
+    
 
     //on regarde le voisin du bas
 
@@ -292,7 +302,7 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
             if (not (*full_grid)[indice_ligne + 1][indice_colonne].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -311,13 +321,14 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
             if (not (*full_grid)[indice_ligne][indice_colonne - 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
             }
         }
     }
+    
 
     //on regarde le voisin de droite
 
@@ -330,7 +341,7 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
             // si oui, on met un cout de 1
             // sinon, on met un cout proportionnel a la distance du mur le plus proche
             if (not (*full_grid)[indice_ligne][indice_colonne + 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
-                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) * 25);
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
             }
             else{
                 this->cost_for_each_voisin.push_back(1);
@@ -338,10 +349,73 @@ void Subcell::add_voisin_adjacent(std::vector<std::vector<Subcell>> *full_grid, 
         }
     }
     
+
+    //ajout des 4 diagonales
+
+    //nord ouest
+
+    if ( indice_ligne - 1 >= 0 and indice_colonne - 1 >= 0){
+        if (not (*full_grid)[indice_ligne - 1][indice_colonne - 1].get_is_occupied()){
+            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne - 1]));
+            this->nb_voisins_adjacents++;
+            if (not (*full_grid)[indice_ligne - 1][indice_colonne - 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
+            }
+            else{
+                this->cost_for_each_voisin.push_back(2);
+            }
+        }
+    }
+
+    //nord est
+
+    if ( indice_ligne - 1 >= 0 and indice_colonne + 1 < (*full_grid)[0].size()){
+        if (not (*full_grid)[indice_ligne - 1][indice_colonne + 1].get_is_occupied()){
+            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne - 1][indice_colonne + 1]));
+            this->nb_voisins_adjacents++;
+            if (not (*full_grid)[indice_ligne - 1][indice_colonne + 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
+            }
+            else{
+                this->cost_for_each_voisin.push_back(2);
+            }
+        }
+    }
+
+    //sud ouest
+
+    if ( indice_ligne + 1 < (*full_grid).size() and indice_colonne - 1 >= 0){
+        if (not (*full_grid)[indice_ligne + 1][indice_colonne - 1].get_is_occupied()){
+            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne + 1][indice_colonne - 1]));
+            this->nb_voisins_adjacents++;
+            if (not (*full_grid)[indice_ligne + 1][indice_colonne - 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1) );
+            }
+            else{
+                this->cost_for_each_voisin.push_back(2);
+            }
+        }
+    }
+
+    //sud est
+
+    if ( indice_ligne + 1 < (*full_grid).size() and indice_colonne + 1 < (*full_grid)[0].size()){
+        if (not (*full_grid)[indice_ligne + 1][indice_colonne + 1].get_is_occupied()){
+            this->voisins_adjacents.push_back(&((*full_grid)[indice_ligne + 1][indice_colonne + 1]));
+            this->nb_voisins_adjacents++;
+            if (not (*full_grid)[indice_ligne + 1][indice_colonne + 1].check_neighbour_around_marge(full_grid,margin,&distance_detected_from_wall)){
+                this->cost_for_each_voisin.push_back((margin - distance_detected_from_wall+1));
+            }
+            else{
+                this->cost_for_each_voisin.push_back(2);
+            }
+        }
+    }
     
 
 
 }
+
 
 
 

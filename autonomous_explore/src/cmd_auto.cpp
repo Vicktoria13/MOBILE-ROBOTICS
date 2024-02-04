@@ -22,6 +22,7 @@ float relative_angle;
 
 float angle_obstacle;
 float dist_obstacle;
+float dist_min_obstacle;
 float dist_ahead;
 float dist_left_eye;
 float dist_left;
@@ -76,17 +77,30 @@ void scan_callback(const sensor_msgs::LaserScan::ConstPtr& msg3){
   dist_ahead = range_max;
   dist_left_eye = range_max;
   dist_right_eye = range_max;
+  dist_min_obstacle = 15;
 
   // On récupère la distance en face et les distances -45° et +45°
   // On tourne le robot à -45°, +45°, -90° ou + 90°
   dist_ahead = ranges[360];
-  dist_right_eye = ranges[220];   // -45°
-  dist_left_eye = ranges[500];    // +45°
-  dist_left = ranges[640];        // -90°
-  dist_right = ranges[80];        // +90°
+  dist_right_eye = ranges[220];   // - 45°
+  dist_left_eye = ranges[500];    // + 45°
+  dist_left = ranges[640];        // 90°
+  dist_right = ranges[80];        // -90°
 
+  // Récupération de la distance à l'obstacle dans un range de 90° (entre -45° et 45°)
+  for (size_t i = 200; i <= 460; ++i){
+    if (dist_min_obstacle > ranges[i]){
+      dist_min_obstacle = ranges[i];
+    }
+  }
+
+  // 60° = 1.22 rad
+  // 218 incréments
+
+  // Récupération de l'angle de l'obstacle le plus lointain pour choisir la nouvelle orientation du robot
   dist_obstacle = dist_right_eye;
   angle_obstacle = -0.4;
+
   if (dist_left_eye > dist_obstacle){
     dist_obstacle = dist_left_eye;
     angle_obstacle = 0.4;
@@ -99,6 +113,8 @@ void scan_callback(const sensor_msgs::LaserScan::ConstPtr& msg3){
     dist_obstacle = dist_right;
     angle_obstacle = -0.8;
   }
+
+
 
   //ROS_INFO("i : %lf",ranges[i]);
   //ROS_INFO("increm : %lf",angle_increment); // 0.0056 rad = 0.3°
@@ -142,7 +158,7 @@ int main(int argc, char **argv){
     // Si pas de mur en face, tout droit
     // Sinon, on se tourne vers l'obstacle le plus lointain
 
-    if (dist_ahead < 0.6 || dist_left_eye < 0.6 || dist_right_eye < 0.6) {
+    if (dist_min_obstacle < 0.5) {
 
       ROS_INFO("Obstacle detected");
       obstacle_detected = true;

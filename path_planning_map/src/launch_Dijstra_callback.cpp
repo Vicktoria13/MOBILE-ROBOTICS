@@ -9,11 +9,15 @@
 #include <yaml-cpp/yaml.h>
 #include "nav_msgs/Path.h"
 #include <tf/tf.h>
+#include <geometry_msgs/PoseArray.h>
+
+
 
 #include "path_planning_map/getUnicyclePos.h"
 #include "path_planning_map/Divide.hpp"
 #include "path_planning_map/Dijsktra.hpp"
 #include "path_planning_map/occupancy_grid_loader.hpp"
+
 
 class PathPlanningNode {
 
@@ -26,7 +30,7 @@ private:
     ros::Subscriber move_goal_sub_;
     ros::Publisher path_pub_;
     ros::ServiceClient client;
-
+    ros::Publisher traj_pub_;
     /***************************************************** Pour la discrétisation *****************************************************************************/
     Divide div;
 
@@ -35,6 +39,7 @@ private:
 
     /***************************************************** Trajectoire *****************************************************************************/
     nav_msgs::Path path_msg_;
+
 
     /***************************************************** Paramètres de la map *****************************************************************************/
     cv::Mat image_binaire_from_pgm;
@@ -78,17 +83,20 @@ public:
 
         move_goal_sub_ = nh_.subscribe("/move_base_simple/goal", 1, &PathPlanningNode::moveGoalCallback, this);
         path_pub_ = nh_.advertise<nav_msgs::Path>("/trajectory", 1);
+        
+       
         client = nh_.serviceClient<path_planning_map::getUnicyclePos>("/get_unicycle_pos");
 
         // Initialisation de la trajectoire : elle sera toujours dans le repère map
         path_msg_.header.frame_id = "map";
+
+        this->folder_where_to_save_im_ = folder_where_to_save_im;
 
         /***************************************************** DISCRETISATION A FAIRE UNE FOIS AU DEBUT  *****************************************************************************/
         
         div = Divide(image_binaire_from_pgm, pas_divide);
         div.divide_map(marge);
         div.build_graph_free_subcells();
-        div.display_subcells(folder_where_to_save_im);
 
         this->marge_ = marge;
         this->pas_ = pas_divide;
@@ -120,6 +128,13 @@ public:
         div = Divide(image_binaire_from_pgm, pas_);
         div.divide_map(marge_);
         div.build_graph_free_subcells();
+
+        ROS_INFO("Save in : %s",folder_where_to_save_im_.c_str()); //save le path
+        /* =================================== FOR DEBUG  ===================================*/
+        div.display_subcells(folder_where_to_save_im_);
+    /* =================================== FOR DEBUG  ===================================*/
+
+        
 
         path_planning_map::getUnicyclePos srv;
 
@@ -171,15 +186,14 @@ public:
             Dijsktra dij = Dijsktra(&tableau_pointurs_free_nodes, nb_free_nodes);
             std::vector<int> path = dij.launch_dijsktra(id_start, id_end);
 
-            //div.display_subcell_state(path, folder_where_to_save_im_);
+            ROS_INFO("Save in : %s",folder_where_to_save_im_.c_str()); //save le path
+            div.display_subcell_state(path, folder_where_to_save_im_);
 
             // Remplissage et constitution du PATH
             path_msg_.poses.clear();
             path_msg_.header.stamp = ros::Time::now();
         
-            //for (Subcell* ptr_sub : dij.get_sub_path()) {
-            ROS_INFO("taille : %d",dij.get_sub_path().size());
-
+        
             std::vector<Subcell*> sub_path = dij.get_sub_path();
 
             for (int i=sub_path.size()-1; i>=0; i--){
@@ -191,12 +205,23 @@ public:
                 pose.pose.position.y = y;
                 pose.pose.position.z = 0.0;
                 path_msg_.poses.push_back(pose);
+
+                // pour traj
+                
+                geometry_msgs::Pose p;
+                p.position.x = x;
+                p.position.y = y;
+                p.position.z = 0.0;
+
+
+
             }
 
 
             /********************************** PUBLICATION DU PATH *******************************************************************/
             ROS_INFO(" ....................  Trajectoire calculée et publiée  .................... !");
             path_pub_.publish(path_msg_);
+
 
 
         } else {

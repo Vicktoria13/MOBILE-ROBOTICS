@@ -1,6 +1,6 @@
-pas: 3
-marge: 2
-folder_image_saver: "/home/victoria/robmob_ws/src/path_planning_map/images_map/"
-map_pgm_path: "/home/victoria/robmob_ws/src/minilab_simulation/map/map_rob_mob.pgm"
-map_yaml_path: "/home/victoria/robmob_ws/src/minilab_simulation/map/map_rob_mob.yaml"
+pas: 4
+marge: 6
+folder_image_saver: "/home/catkin_ws/src/path_planning_map/images_map/"
+map_pgm_path: "/home/catkin_ws/src/minilab_simulation/map/our_buvette.pgm"
+map_yaml_path: "/home/catkin_ws/src/minilab_simulation/map/our_buvette.yaml"
 

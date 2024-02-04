@@ -91,7 +91,7 @@ int main(int argc, char **argv){
     ros::Subscriber sub2 = n.subscribe("pose_unicycle", 1000, topic_callback2);
 
     // Distance l1 (centre du robot - point P)
-    float l1 = 0.1;
+    float l1 = 0.05;
 
     float u1, u2;
     
@@ -101,17 +101,33 @@ int main(int argc, char **argv){
 
     /*
     /// RALLIEMENT DE POINTS DE PASSAGE
-    */
+    */  
+
+    // Point à atteindre
+    if (indice_current_point < nbrePoints-1){
+      x_goal = chemin.poses[indice_current_point].pose.position.x;
+      y_goal = chemin.poses[indice_current_point].pose.position.y;
+
+      //ROS_INFO("XG_SUIV = %f",x_goal_suiv);
+      //ROS_INFO("YG_SUIV = %f",y_goal_suiv);
+      ROS_INFO("XG = %f",x_goal);
+      ROS_INFO("YG = %f",y_goal);
+      ROS_INFO("INDICE CURRENT POINT : %d", indice_current_point);
+    }
+    else{
+      x_goal = x_curr;
+      y_goal = y_curr;
+      ROS_INFO("FIN");
+    }
 
     ROS_INFO("NORME ERREUR : %f",err_x*err_x + err_y*err_y);
 
     ROS_INFO("X CURRENT : %lf",x_curr);
     ROS_INFO("Y CURRENT : %lf",y_curr);
 
-    /*
     // Gains
-    float k1 = 0.7;
-    float k2 = 0.7;
+    float k1 = 0.2;
+    float k2 = 0.2;
 
     v1 = -k1*(x_curr-x_goal);
     v2 = -k2*(y_curr-y_goal);
@@ -126,11 +142,20 @@ int main(int argc, char **argv){
 
     //ROS_INFO("U1 : %lf",u1);
     //ROS_INFO("U2 : %lf",u2);
-    */
+
+    // Saturation
+    if (u2 > 0.5) u2 = 0.5;
+    if (u2 < -0.5) u2 = -0.5;
+
+    // Saturation pour éviter zig-zag
+    //if (u2 > 0.01 && u2 < 0.2) u2 = 0.01;
+    //if (u2 > -0.2 && u2 < 0.01) u2 = -0.01;
+    
 
     /*
     /// SUIVI DE CHEMIN
     */
+    /*
     // Coordonnées du point courant à atteindre
     if (indice_current_point < nbrePoints-1){
       x_goal_suiv =  chemin.poses[indice_current_point+1].pose.position.x;
@@ -194,9 +219,10 @@ int main(int argc, char **argv){
       u1 = 0;
       u2 = 0;
     }
+    */
 
-    //ROS_INFO("u1 : %lf",u1);
-    //ROS_INFO("u2 : %lf",u2);
+    ROS_INFO("u1 : %lf",u1);
+    ROS_INFO("u2 : %lf",u2);
 
 
     // Envoi des commandes sur le topic cmd_vel
@@ -209,7 +235,7 @@ int main(int argc, char **argv){
     command.publish(cmd);
 
     // Si erreur faible, on passe au point suivant
-    if (((err_x*err_x + err_y*err_y) < 0.6)) indice_current_point++;
+    if (((err_x*err_x + err_y*err_y) < 0.1)) indice_current_point++;
 
     rate.sleep();
   }
