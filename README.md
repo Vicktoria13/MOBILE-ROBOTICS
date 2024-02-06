@@ -7,7 +7,12 @@
 |![ROS-Noetic](https://img.shields.io/badge/ROS-Noetic-red.svg) ![Ubuntu-20.04](https://img.shields.io/badge/Ubuntu-20.04-blue.svg)
 
 
-> **Website Page Description [here]()
+> Description du projet [ici](https://sites.google.com/view/portfoliovictorianguyen/mobile-robotics-2024)
+
+> Video du projet [ici](https://www.youtube.com/watch?v=aX6sf8zYG6A&lc=UgzfNgSvKdWuJNZ3BKB4AaABAg
+)
+
+
 
 ## :key: Mot clés
 Robotique Mobile, Path Planning, ROS, C++

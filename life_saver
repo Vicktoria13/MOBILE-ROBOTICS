@@ -1,0 +1,12 @@
+rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '[0.0,0.0,0.0]' '[0.0,0.0,0.0]'
+
+
+
+export ROS_MASTER_URI=http://192.168.0.21:11311
+export ROS_IP=192.168.0.31
+
+
+rosrun map_server map_saver --occ 65 --free 19,6 -f map_rob_mob map:=/map 
+
+
+
